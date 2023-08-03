@@ -1,7 +1,7 @@
 package ru.levprav.videosmap.domain.location
 
-import android.location.Location
+import com.google.android.gms.maps.model.LatLng
 
 interface LocationTracker {
-    suspend fun getCurrentLocation(): Location?
+    suspend fun getCurrentLocation(): LatLng?
 }
