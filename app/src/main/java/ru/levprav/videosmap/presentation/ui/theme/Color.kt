@@ -1,4 +1,4 @@
-package ru.levprav.videosmap.ui.theme
+package ru.levprav.videosmap.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

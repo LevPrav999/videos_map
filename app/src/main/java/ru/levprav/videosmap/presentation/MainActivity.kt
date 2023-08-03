@@ -1,4 +1,4 @@
-package ru.levprav.videosmap
+package ru.levprav.videosmap.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,8 +9,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import ru.levprav.videosmap.ui.theme.VideosMapTheme
+import androidx.compose.ui.unit.sp
+import ru.levprav.videosmap.presentation.ui.theme.VideosMapTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +35,8 @@ class MainActivity : ComponentActivity() {
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     Text(
         text = "Hello $name!",
+        fontSize = 38.sp,
+        fontWeight = FontWeight.Bold,
         modifier = modifier
     )
 }
