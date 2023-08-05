@@ -1,5 +1,6 @@
 package ru.levprav.videosmap.data.repository
 
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import ru.levprav.videosmap.data.remote.UserApi
 import ru.levprav.videosmap.domain.models.UserModel
@@ -7,7 +8,7 @@ import ru.levprav.videosmap.domain.repository.UserRepository
 import ru.levprav.videosmap.domain.util.Resource
 import javax.inject.Inject
 
-class WeatherRepositoryImpl @Inject constructor(
+class UserRepositoryImpl @Inject constructor(
     private val api: UserApi
 ): UserRepository {
     override suspend fun signUp(email: String, password: String): Resource<Unit>{
@@ -26,7 +27,18 @@ class WeatherRepositoryImpl @Inject constructor(
     }
 
     override suspend fun signIn(email: String, password: String): Resource<Unit>{
-        TODO("Not yet implemented")
+        return try{
+            Resource.Success(
+                data = api.signIn(email, password)
+            )
+        } catch (e: Exception){
+            e.printStackTrace()
+            if(e is FirebaseAuthInvalidCredentialsException){
+                Resource.Error("Пользователя с такими данными не существует")
+            }else{
+                Resource.Error(e.message ?: "Неизвестная ошибка")
+            }
+        }
     }
 
     override suspend fun getMyProfile(): Resource<UserModel> {
