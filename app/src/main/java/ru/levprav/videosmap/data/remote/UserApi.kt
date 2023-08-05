@@ -12,7 +12,7 @@ class UserApi @Inject constructor(){
     var firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
     suspend fun signUp(email: String, password: String){
-        firebaseAuth.signInWithEmailAndPassword(email, password)
+        firebaseAuth.createUserWithEmailAndPassword(email, password)
     }
 
     suspend fun signIn(email: String, password: String){
