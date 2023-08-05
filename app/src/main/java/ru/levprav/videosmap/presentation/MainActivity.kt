@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Greeting(vm: SignInViewModel) {
     Button(onClick = {
-        vm.signUp("testttt@gmail.com", "12345")
+        vm.signUp("testttt@gmail.com", "123456")
     }) {
         Text(text = "Sign Up")
     }
