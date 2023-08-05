@@ -4,10 +4,9 @@ firebase-auth = "22.1.0"
 firebase-database = "20.2.2"
 firebase-firestore-ktx = "24.7.0"
 firebase-storage = "20.2.1"
-hilt-android = "2.40.5"
-hilt-android-gradle-plugin = "2.41"
+hilt-android = "2.47"
+hilt-android-gradle-plugin = "2.47"
 hilt-compiler = "1.0.0"
-hilt-lifecycle-viewmodel = "1.0.0-alpha03"
 kotlin = "1.8.10"
 core-ktx = "1.10.1"
 junit = "4.13.2"
@@ -21,7 +20,6 @@ play-services-maps = "18.1.0"
 
 [libraries]
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hilt-compiler" }
-androidx-hilt-lifecycle-viewmodel = { module = "androidx.hilt:hilt-lifecycle-viewmodel", version.ref = "hilt-lifecycle-viewmodel" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-compiler" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-runtime-ktx" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
