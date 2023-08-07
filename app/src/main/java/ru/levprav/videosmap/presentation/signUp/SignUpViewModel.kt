@@ -14,8 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val repository: UserRepository,
-    private val locationTracker: LocationTracker
+    private val repository: UserRepository
 ): ViewModel() {
 
     var state by mutableStateOf(SignUpState())
