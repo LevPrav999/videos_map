@@ -11,18 +11,25 @@ import javax.inject.Inject
 class UserRepositoryImpl @Inject constructor(
     private val api: UserApi
 ): UserRepository {
-    override suspend fun signUp(email: String, password: String): Resource<Unit>{
-        return try{
-            Resource.Success(
-                data = api.signUp(email, password)
-            )
-        } catch (e: Exception){
-            e.printStackTrace()
-            if(e is FirebaseAuthUserCollisionException){
-                Resource.Error("Пользователь с таким Email уже существует")
-            }else{
-                Resource.Error(e.message ?: "Неизвестная ошибка")
+    override suspend fun signUp(email: String, password: String): Resource<Unit> {
+        try {
+            if (email.isEmpty() || password.isEmpty()) {
+                return Resource.Error("Please fill in all fields")
             }
+
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                return Resource.Error("Incorrect Email format")
+            }
+
+            val isUserExists = api.checkUserExists(email)
+            if(!isUserExists){
+                return Resource.Error("Email is being used by another account")
+            }
+            api.signUp(email, password)
+            return Resource.Success(Unit)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return Resource.Error(e.message ?: "Unknown error")
         }
     }
 
