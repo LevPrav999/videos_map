@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import ru.levprav.videosmap.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import ru.levprav.videosmap.domain.location.LocationTracker
 import ru.levprav.videosmap.domain.repository.UserRepository
 import javax.inject.Inject
 
