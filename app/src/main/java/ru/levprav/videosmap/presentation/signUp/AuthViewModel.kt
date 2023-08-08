@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.findViewTreeViewModelStoreOwner
 import androidx.lifecycle.viewModelScope
 import ru.levprav.videosmap.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,16 +20,21 @@ class AuthViewModel @Inject constructor(
     var state by mutableStateOf(AuthState())
         private set
 
-    fun signUp(email: String, password: String){
+    fun signUp(email: String, password: String, passwordConfirm: String){
         viewModelScope.launch {
             state = state.copy(isLoading = true)
-            state = when(val result = repository.signUp(email, password)){
-                is Resource.Error -> {
-                    state.copy(isLoading = false, error = result.message)
-                }
-                is Resource.Success -> {
-                    state.copy(isLoading = false, error = null)
-                    // redirect to EditUserInfo screen
+            val resultLiveData = repository.signUp(email, password, passwordConfirm)
+
+            resultLiveData.observeForever { result ->
+                state = when (result) {
+                    is Resource.Error -> {
+                        state.copy(isLoading = false, error = result.message)
+                    }
+
+                    is Resource.Success -> {
+                        state.copy(isLoading = false, error = null)
+                        // redirect to EditUserInfo screen
+                    }
                 }
             }
         }
@@ -37,13 +43,18 @@ class AuthViewModel @Inject constructor(
     fun signIn(email: String, password: String){
         viewModelScope.launch {
             state = state.copy(isLoading = true)
-            state = when(val result = repository.signIn(email, password)){
-                is Resource.Error -> {
-                    state.copy(isLoading = false, error = result.message)
-                }
-                is Resource.Success -> {
-                    state.copy(isLoading = false, error = null)
-                    // redirect to EditUserInfo screen
+            val resultLiveData = repository.signIn(email, password)
+
+            resultLiveData.observeForever { result ->
+                state = when (result) {
+                    is Resource.Error -> {
+                        state.copy(isLoading = false, error = result.message)
+                    }
+
+                    is Resource.Success -> {
+                        state.copy(isLoading = false, error = null)
+                        // redirect to EditUserInfo screen
+                    }
                 }
             }
         }
