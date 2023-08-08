@@ -13,17 +13,32 @@ import ru.levprav.videosmap.domain.repository.UserRepository
 import javax.inject.Inject
 
 @HiltViewModel
-class SignUpViewModel @Inject constructor(
+class AuthViewModel @Inject constructor(
     private val repository: UserRepository
 ): ViewModel() {
 
-    var state by mutableStateOf(SignUpState())
+    var state by mutableStateOf(AuthState())
         private set
 
     fun signUp(email: String, password: String){
         viewModelScope.launch {
             state = state.copy(isLoading = true)
             state = when(val result = repository.signUp(email, password)){
+                is Resource.Error -> {
+                    state.copy(isLoading = false, error = result.message)
+                }
+                is Resource.Success -> {
+                    state.copy(isLoading = false, error = null)
+                    // redirect to EditUserInfo screen
+                }
+            }
+        }
+    }
+
+    fun signIn(email: String, password: String){
+        viewModelScope.launch {
+            state = state.copy(isLoading = true)
+            state = when(val result = repository.signIn(email, password)){
                 is Resource.Error -> {
                     state.copy(isLoading = false, error = result.message)
                 }
