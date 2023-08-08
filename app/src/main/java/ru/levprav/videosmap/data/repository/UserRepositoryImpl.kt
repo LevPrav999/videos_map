@@ -1,5 +1,7 @@
 package ru.levprav.videosmap.data.repository
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import ru.levprav.videosmap.data.remote.UserApi
@@ -11,41 +13,67 @@ import javax.inject.Inject
 class UserRepositoryImpl @Inject constructor(
     private val api: UserApi
 ): UserRepository {
-    override suspend fun signUp(email: String, password: String): Resource<Unit> {
+
+    private val signUpLiveData = MutableLiveData<Resource<Unit>>()
+    private val signInLiveData = MutableLiveData<Resource<Unit>>()
+    override suspend fun signUp(email: String, password: String, passwordConfirm: String): LiveData<Resource<Unit>> {
         try {
-            if (email.isEmpty() || password.isEmpty()) {
-                return Resource.Error("Please fill in all fields")
+            if (email.isEmpty() || password.isEmpty() || passwordConfirm.isEmpty()) {
+                signUpLiveData.postValue(Resource.Error("Please fill in all fields"))
             }
 
-            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                return Resource.Error("Incorrect Email format")
+            else if (password != passwordConfirm){
+                signUpLiveData.postValue(Resource.Error("Passwords don't match"))
             }
 
-            val isUserExists = api.checkUserExists(email)
-            if(!isUserExists){
-                return Resource.Error("Email is being used by another account")
+            else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                signUpLiveData.postValue(Resource.Error("Incorrect Email format"))
+            }else{
+                val isUserExists = api.checkUserExists(email)
+                if (isUserExists){
+                    signUpLiveData.postValue(Resource.Error("Email is being used by another account"))
+                }else{
+                    api.signUp(email, password)
+                    signUpLiveData.postValue(Resource.Success(Unit))
+                }
             }
-            api.signUp(email, password)
-            return Resource.Success(Unit)
         } catch (e: Exception) {
             e.printStackTrace()
-            return Resource.Error(e.message ?: "Unknown error")
+            signUpLiveData.postValue(Resource.Error(e.message ?: "Unknown error"))
         }
+
+        return signUpLiveData
     }
 
-    override suspend fun signIn(email: String, password: String): Resource<Unit>{
-        return try{
-            Resource.Success(
-                data = api.signIn(email, password)
-            )
-        } catch (e: Exception){
-            e.printStackTrace()
-            if(e is FirebaseAuthInvalidCredentialsException){
-                Resource.Error("Пользователя с такими данными не существует")
-            }else{
-                Resource.Error(e.message ?: "Неизвестная ошибка")
+    override suspend fun signIn(email: String, password: String): LiveData<Resource<Unit>> {
+        try {
+            if (email.isEmpty() || password.isEmpty()) {
+                signInLiveData.postValue(Resource.Error("Please fill in all fields"))
             }
+
+            else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                signInLiveData.postValue(Resource.Error("Incorrect Email format"))
+            }else{
+                val isUserExists = api.checkUserExists(email)
+                if (!isUserExists){
+                    signInLiveData.postValue(Resource.Error("User with this Email doesn't exists"))
+                }else{
+                    api.signIn(email, password).addOnCompleteListener{
+                        task ->
+                        if(task.isSuccessful){
+                            signInLiveData.postValue(Resource.Success(Unit))
+                        }else{
+                            signInLiveData.postValue(Resource.Error(task.exception?.message.toString()))
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            signInLiveData.postValue(Resource.Error(e.message ?: "Unknown error"))
         }
+
+        return signInLiveData
     }
 
     override suspend fun getMyProfile(): Resource<UserModel> {
