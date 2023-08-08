@@ -14,11 +14,16 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
 @SuppressLint("CoroutineCreationDuringComposition")
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AuthPage(navController: NavController, viewModel: AuthViewModel) {
+    var dialogIndex by remember { mutableStateOf(1) } // 0 - choice 1 - signUp 2 - signIn
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var passwordConfirm by remember { mutableStateOf("") }
+
+
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -27,6 +32,53 @@ fun AuthPage(navController: NavController, viewModel: AuthViewModel) {
             snackbarHostState.showSnackbar(error)
         }
     }
+
+    when(dialogIndex){
+        0 -> {}
+        1 -> SignUp(
+            email = email,
+            password = password,
+            passwordConfirm = passwordConfirm,
+            onEmailChanged = {
+                updatedValue -> email = updatedValue
+
+        },onPasswordChanged = {
+                    updatedValue -> password = updatedValue
+
+            },onPasswordConfirmChanged = {
+                    updatedValue -> passwordConfirm = updatedValue
+
+            }, onBackPressed = {
+                dialogIndex = 2
+        }, onButtonPressed = {
+            viewModel.signUp(email, password)
+            keyboardController?.hide()
+        })
+        2 -> SignIn(
+            email = email,
+            password = password,
+            onEmailChanged = {
+                    updatedValue -> email = updatedValue
+
+            },onPasswordChanged = { updatedValue ->
+                password = updatedValue
+            },
+            onBackPressed = {
+                dialogIndex = 1
+            }, onButtonPressed = {
+                viewModel.signIn(email, password)
+                keyboardController?.hide()
+            })
+    }
+
+
+    SnackbarHost(snackbarHostState)
+}
+
+@Composable
+fun SignUp(
+    email: String, password: String, passwordConfirm: String,
+    onEmailChanged: (String) -> Unit, onPasswordChanged: (String) -> Unit, onPasswordConfirmChanged: (String) -> Unit, onBackPressed: () -> Unit, onButtonPressed: () -> Unit){
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -41,7 +93,9 @@ fun AuthPage(navController: NavController, viewModel: AuthViewModel) {
         ) {
             TextField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = {
+                    onEmailChanged(it)
+                },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Email
                 ),
@@ -54,7 +108,87 @@ fun AuthPage(navController: NavController, viewModel: AuthViewModel) {
 
             TextField(
                 value = password,
-                onValueChange = { password = it },
+                onValueChange = { onPasswordChanged(it) },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Password
+                ),
+                textStyle = MaterialTheme.typography.bodyMedium,
+                placeholder = { Text("Password") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            )
+            TextField(
+                value = passwordConfirm,
+                onValueChange = { onPasswordConfirmChanged(it) },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Password
+                ),
+                textStyle = MaterialTheme.typography.bodyMedium,
+                placeholder = { Text("Confirm password") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Button(
+                    onClick = onBackPressed,
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Text("Back")
+                }
+
+                Button(
+                    onClick = onButtonPressed,
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Text("Sign Up")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SignIn(
+    email: String, password: String,
+    onEmailChanged: (String) -> Unit, onPasswordChanged: (String) -> Unit, onBackPressed: () -> Unit, onButtonPressed: () -> Unit){
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            TextField(
+                value = email,
+                onValueChange = {
+                    onEmailChanged(it)
+                },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Email
+                ),
+                textStyle = MaterialTheme.typography.bodyMedium,
+                placeholder = { Text("Email") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            )
+
+            TextField(
+                value = password,
+                onValueChange = { onPasswordChanged(it) },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Password
                 ),
@@ -72,25 +206,19 @@ fun AuthPage(navController: NavController, viewModel: AuthViewModel) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Button(
-                    onClick = {
-                        navController.popBackStack()
-                    },
+                    onClick = onBackPressed,
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text("Back")
                 }
 
                 Button(
-                    onClick = {
-                        viewModel.signUp(email, password)
-                        keyboardController?.hide()
-                    },
+                    onClick = onButtonPressed,
                     modifier = Modifier.padding(8.dp)
                 ) {
-                    Text("Sign Up")
+                    Text("Sign In")
                 }
             }
         }
     }
-    SnackbarHost(snackbarHostState)
 }
