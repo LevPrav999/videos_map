@@ -1,13 +1,19 @@
 package ru.levprav.videosmap.presentation.signUp
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush.Companion.radialGradient
+import androidx.compose.ui.graphics.Brush.Companion.sweepGradient
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -17,7 +23,7 @@ import androidx.navigation.NavController
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AuthPage(navController: NavController, viewModel: AuthViewModel) {
-    var dialogIndex by remember { mutableStateOf(1) } // 0 - choice 1 - signUp 2 - signIn
+    var dialogIndex by remember { mutableStateOf(0) } // 0 - choice 1 - signUp 2 - signIn
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -34,40 +40,31 @@ fun AuthPage(navController: NavController, viewModel: AuthViewModel) {
     }
 
     when(dialogIndex){
-        0 -> {}
-        1 -> SignUp(
+        0 -> ChoiceDialog(onSignInClick = { dialogIndex = 2}, onSignUpClick = { dialogIndex = 1})
+        else -> AuthDialog(
+            isSignUp = dialogIndex==1,
             email = email,
             password = password,
             passwordConfirm = passwordConfirm,
             onEmailChanged = {
-                updatedValue -> email = updatedValue
+                    updatedValue -> email = updatedValue
 
-        },onPasswordChanged = {
+            },onPasswordChanged = {
                     updatedValue -> password = updatedValue
 
             },onPasswordConfirmChanged = {
                     updatedValue -> passwordConfirm = updatedValue
 
             }, onBackPressed = {
-                dialogIndex = 2
-        }, onButtonPressed = {
-            viewModel.signUp(email, password)
-            keyboardController?.hide()
-        })
-        2 -> SignIn(
-            email = email,
-            password = password,
-            onEmailChanged = {
-                    updatedValue -> email = updatedValue
-
-            },onPasswordChanged = { updatedValue ->
-                password = updatedValue
-            },
-            onBackPressed = {
-                dialogIndex = 1
+                dialogIndex = 0
             }, onButtonPressed = {
-                viewModel.signIn(email, password)
-                keyboardController?.hide()
+                if(dialogIndex==1){
+                    viewModel.signUp(email, password, passwordConfirm)
+                    keyboardController?.hide()
+                }else{
+                    viewModel.signIn(email, password)
+                    keyboardController?.hide()
+                }
             })
     }
 
@@ -76,7 +73,7 @@ fun AuthPage(navController: NavController, viewModel: AuthViewModel) {
 }
 
 @Composable
-fun SignUp(
+fun AuthDialog( isSignUp: Boolean,
     email: String, password: String, passwordConfirm: String,
     onEmailChanged: (String) -> Unit, onPasswordChanged: (String) -> Unit, onPasswordConfirmChanged: (String) -> Unit, onBackPressed: () -> Unit, onButtonPressed: () -> Unit){
 
@@ -118,7 +115,8 @@ fun SignUp(
                     .fillMaxWidth()
                     .padding(8.dp)
             )
-            TextField(
+            if (isSignUp){
+                TextField(
                 value = passwordConfirm,
                 onValueChange = { onPasswordConfirmChanged(it) },
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -130,6 +128,7 @@ fun SignUp(
                     .fillMaxWidth()
                     .padding(8.dp)
             )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -148,77 +147,46 @@ fun SignUp(
                     onClick = onButtonPressed,
                     modifier = Modifier.padding(8.dp)
                 ) {
-                    Text("Sign Up")
+                    Text(if (isSignUp) "Sign Up" else "Sign In")
                 }
             }
         }
     }
 }
-
 @Composable
-fun SignIn(
-    email: String, password: String,
-    onEmailChanged: (String) -> Unit, onPasswordChanged: (String) -> Unit, onBackPressed: () -> Unit, onButtonPressed: () -> Unit){
-
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+fun ChoiceDialog(onSignInClick: () -> Unit, onSignUpClick: () -> Unit){
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
+        Text(
+            text = "Welcome to VideosMap",
+            style = MaterialTheme.typography.headlineLarge,
+            color = Color.Black,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        Button(
+            onClick = onSignInClick,
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .fillMaxWidth()
+                .height(48.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
         ) {
-            TextField(
-                value = email,
-                onValueChange = {
-                    onEmailChanged(it)
-                },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Email
-                ),
-                textStyle = MaterialTheme.typography.bodyMedium,
-                placeholder = { Text("Email") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            )
-
-            TextField(
-                value = password,
-                onValueChange = { onPasswordChanged(it) },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Password
-                ),
-                textStyle = MaterialTheme.typography.bodyMedium,
-                placeholder = { Text("Password") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Button(
-                    onClick = onBackPressed,
-                    modifier = Modifier.padding(8.dp)
-                ) {
-                    Text("Back")
-                }
-
-                Button(
-                    onClick = onButtonPressed,
-                    modifier = Modifier.padding(8.dp)
-                ) {
-                    Text("Sign In")
-                }
-            }
+            Text(text = "Sign In", color = Color.White)
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = onSignUpClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Green)
+        ) {
+            Text(text = "Sign Up", color = Color.White)
         }
     }
 }
