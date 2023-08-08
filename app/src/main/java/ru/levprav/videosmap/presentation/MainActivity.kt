@@ -17,7 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import ru.levprav.videosmap.presentation.signUp.SignUpPage
+import ru.levprav.videosmap.presentation.signUp.AuthPage
 import ru.levprav.videosmap.presentation.ui.theme.VideosMapTheme
 
 
@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             NavHost(navController = navController, startDestination = "signUp"){
                 composable("signUp") {
-                    SignUpPage(navController = navController, hiltViewModel())
+                    AuthPage(navController = navController, hiltViewModel())
                 }
             }
         }
