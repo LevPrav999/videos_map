@@ -31,8 +31,8 @@ class AuthViewModel @Inject constructor(
                             state.copy(isLoading = false, error = result.message)
                         }
                         is Resource.Success -> {
-                            state.copy(isLoading = false, error = null)
-                            // redirect to EditUserInfo screen
+                            state.copy(isLoading = false, error = null, toEditInfo = true)
+
                         }
                         else -> {
                             state.copy(isLoading = true)
@@ -53,8 +53,7 @@ class AuthViewModel @Inject constructor(
                             state.copy(isLoading = false, error = result.message)
                         }
                         is Resource.Success -> {
-                            state.copy(isLoading = false, error = null)
-                            // redirect to EditUserInfo screen
+                            state.copy(isLoading = false, error = null, toEditInfo = true)
                         }
                         else -> {
                             state.copy(isLoading = true)
@@ -62,5 +61,9 @@ class AuthViewModel @Inject constructor(
                     }
                 }
         }
+    }
+
+    fun navigate(){
+        state = state.copy(toEditInfo = false)
     }
 }
