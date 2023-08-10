@@ -20,10 +20,6 @@ import androidx.navigation.NavController
 fun AuthPage(navController: NavController, viewModel: AuthViewModel) {
     var dialogIndex by remember { mutableStateOf(0) } // 0 - choice 1 - signUp 2 - signIn
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordConfirm by remember { mutableStateOf("") }
-
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -47,26 +43,36 @@ fun AuthPage(navController: NavController, viewModel: AuthViewModel) {
         else -> AuthDialog(
             isLoading = viewModel.state.isLoading,
             isSignUp = dialogIndex == 1,
-            email = email,
-            password = password,
-            passwordConfirm = passwordConfirm,
+            email = viewModel.state.data.email ?: "",
+            password = viewModel.state.data.password ?: "",
+            passwordConfirm = viewModel.state.data.passwordConfirm ?: "",
             onEmailChanged = { updatedValue ->
-                email = updatedValue
+                viewModel.onEmailChanged(updatedValue)
 
             }, onPasswordChanged = { updatedValue ->
-                password = updatedValue
+                viewModel.onPasswordChanged(updatedValue)
 
             }, onPasswordConfirmChanged = { updatedValue ->
-                passwordConfirm = updatedValue
+                viewModel.onPasswordConfirmChanged(updatedValue)
 
             }, onBackPressed = {
                 dialogIndex = 0
             }, onButtonPressed = {
                 if (dialogIndex == 1) {
-                    viewModel.signUp(email, password, passwordConfirm)
+                    viewModel.state.data.email?.let { viewModel.state.data.password?.let { it1 ->
+                        viewModel.state.data.passwordConfirm?.let { it2 ->
+                            viewModel.signUp(it,
+                                it1, it2
+                            )
+                        }
+                    } }
                     keyboardController?.hide()
                 } else {
-                    viewModel.signIn(email, password)
+                    viewModel.state.data.email?.let { viewModel.state.data.password?.let { it1 ->
+                        viewModel.signIn(it,
+                            it1
+                        )
+                    } }
                     keyboardController?.hide()
                 }
             })
