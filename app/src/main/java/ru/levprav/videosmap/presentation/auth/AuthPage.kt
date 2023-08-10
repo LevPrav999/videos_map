@@ -34,7 +34,13 @@ fun AuthPage(navController: NavController, viewModel: AuthViewModel) {
                 snackbarHostState.showSnackbar(error)
             }
         }
+        if(viewModel.state.toEditInfo){
+            navController.popBackStack()
+            navController.navigate("edit_user")
+            viewModel.navigate()
+        }
     }
+
 
     when(dialogIndex){
         0 -> ChoiceDialog(onSignInClick = { dialogIndex = 2}, onSignUpClick = { dialogIndex = 1})
