@@ -1,9 +1,5 @@
 package ru.levprav.videosmap.data.repository
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -13,13 +9,16 @@ import ru.levprav.videosmap.domain.models.UserModel
 import ru.levprav.videosmap.domain.repository.UserRepository
 import ru.levprav.videosmap.domain.util.Resource
 import javax.inject.Inject
-import kotlin.random.Random
 
 class UserRepositoryImpl @Inject constructor(
     private val api: UserApi
-): UserRepository {
+) : UserRepository {
 
-    override suspend fun signUp(email: String, password: String, passwordConfirm: String): Flow<Resource<Unit>> = flow {
+    override suspend fun signUp(
+        email: String,
+        password: String,
+        passwordConfirm: String
+    ): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading())
 
         if (email.isEmpty() || password.isEmpty() || passwordConfirm.isEmpty()) {
@@ -73,15 +72,15 @@ class UserRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override suspend fun saveProfile(profile: UserModel): Resource<Unit>{
+    override suspend fun saveProfile(profile: UserModel): Resource<Unit> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun follow(followedUid: String): Resource<Unit>{
+    override suspend fun follow(followedUid: String): Resource<Unit> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun unfollow(followedUid: String): Resource<Unit>{
+    override suspend fun unfollow(followedUid: String): Resource<Unit> {
         TODO("Not yet implemented")
     }
 

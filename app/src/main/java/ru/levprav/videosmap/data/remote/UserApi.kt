@@ -1,19 +1,13 @@
 package ru.levprav.videosmap.data.remote
 
-import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthException
-import com.google.firebase.auth.FirebaseAuthInvalidUserException
-import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import ru.levprav.videosmap.domain.models.UserModel
-import ru.levprav.videosmap.domain.util.Resource
 import javax.inject.Inject
 
-class UserApi @Inject constructor(){
+class UserApi @Inject constructor() {
 
     var firebaseFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     var firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()

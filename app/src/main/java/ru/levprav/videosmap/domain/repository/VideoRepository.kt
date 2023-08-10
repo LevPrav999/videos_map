@@ -1,6 +1,5 @@
 package ru.levprav.videosmap.domain.repository
 
-import android.location.Location
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import ru.levprav.videosmap.domain.models.VideoModel

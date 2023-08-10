@@ -1,12 +1,9 @@
 package ru.levprav.videosmap.presentation.user
 
-import android.Manifest
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
-import android.provider.MediaStore
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -28,10 +25,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,8 +42,10 @@ import ru.levprav.videosmap.R
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun EditUserPage(navController: NavController, viewModel: EditUserViewModel) {
-    val launcher = rememberLauncherForActivityResult(contract =
-    ActivityResultContracts.GetContent()) { uri: Uri? ->
+    val launcher = rememberLauncherForActivityResult(
+        contract =
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
         uri?.let {
             viewModel.getAvatar(it)
         }
@@ -91,10 +88,10 @@ fun Avatar(avatarUrl: Uri?, onClick: () -> Unit) {
     }
     avatarUrl?.let {
         val source = ImageDecoder
-            .createSource(LocalContext.current.contentResolver,it)
+            .createSource(LocalContext.current.contentResolver, it)
         bitmap.value = ImageDecoder.decodeBitmap(source)
 
-        bitmap.value?.let {  btm ->
+        bitmap.value?.let { btm ->
 
             Image(
                 bitmap = btm.asImageBitmap(),
@@ -109,7 +106,7 @@ fun Avatar(avatarUrl: Uri?, onClick: () -> Unit) {
                 contentScale = ContentScale.Crop
             )
         }
-    }?: Image(
+    } ?: Image(
         painter = painterResource(id = R.drawable.ic_launcher_background),
         contentDescription = "Avatar",
         modifier = Modifier

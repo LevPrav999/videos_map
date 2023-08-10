@@ -30,11 +30,11 @@ fun AuthPage(navController: NavController, viewModel: AuthViewModel) {
     val snackbarHostState = remember { SnackbarHostState() }
     LaunchedEffect(viewModel.state) {
         viewModel.state.error?.let { error ->
-            if(!viewModel.state.isLoading){
+            if (!viewModel.state.isLoading) {
                 snackbarHostState.showSnackbar(error)
             }
         }
-        if(viewModel.state.toEditInfo){
+        if (viewModel.state.toEditInfo) {
             navController.popBackStack()
             navController.navigate("edit_user")
             viewModel.navigate()
@@ -42,30 +42,30 @@ fun AuthPage(navController: NavController, viewModel: AuthViewModel) {
     }
 
 
-    when(dialogIndex){
-        0 -> ChoiceDialog(onSignInClick = { dialogIndex = 2}, onSignUpClick = { dialogIndex = 1})
+    when (dialogIndex) {
+        0 -> ChoiceDialog(onSignInClick = { dialogIndex = 2 }, onSignUpClick = { dialogIndex = 1 })
         else -> AuthDialog(
             isLoading = viewModel.state.isLoading,
-            isSignUp = dialogIndex==1,
+            isSignUp = dialogIndex == 1,
             email = email,
             password = password,
             passwordConfirm = passwordConfirm,
-            onEmailChanged = {
-                    updatedValue -> email = updatedValue
+            onEmailChanged = { updatedValue ->
+                email = updatedValue
 
-            },onPasswordChanged = {
-                    updatedValue -> password = updatedValue
+            }, onPasswordChanged = { updatedValue ->
+                password = updatedValue
 
-            },onPasswordConfirmChanged = {
-                    updatedValue -> passwordConfirm = updatedValue
+            }, onPasswordConfirmChanged = { updatedValue ->
+                passwordConfirm = updatedValue
 
             }, onBackPressed = {
                 dialogIndex = 0
             }, onButtonPressed = {
-                if(dialogIndex==1){
+                if (dialogIndex == 1) {
                     viewModel.signUp(email, password, passwordConfirm)
                     keyboardController?.hide()
-                }else{
+                } else {
                     viewModel.signIn(email, password)
                     keyboardController?.hide()
                 }
@@ -77,9 +77,18 @@ fun AuthPage(navController: NavController, viewModel: AuthViewModel) {
 }
 
 @Composable
-fun AuthDialog(isLoading: Boolean, isSignUp: Boolean,
-    email: String, password: String, passwordConfirm: String,
-    onEmailChanged: (String) -> Unit, onPasswordChanged: (String) -> Unit, onPasswordConfirmChanged: (String) -> Unit, onBackPressed: () -> Unit, onButtonPressed: () -> Unit){
+fun AuthDialog(
+    isLoading: Boolean,
+    isSignUp: Boolean,
+    email: String,
+    password: String,
+    passwordConfirm: String,
+    onEmailChanged: (String) -> Unit,
+    onPasswordChanged: (String) -> Unit,
+    onPasswordConfirmChanged: (String) -> Unit,
+    onBackPressed: () -> Unit,
+    onButtonPressed: () -> Unit
+) {
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -119,19 +128,19 @@ fun AuthDialog(isLoading: Boolean, isSignUp: Boolean,
                     .fillMaxWidth()
                     .padding(8.dp)
             )
-            if (isSignUp){
+            if (isSignUp) {
                 TextField(
-                value = passwordConfirm,
-                onValueChange = { onPasswordConfirmChanged(it) },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Password
-                ),
-                textStyle = MaterialTheme.typography.bodyMedium,
-                placeholder = { Text("Confirm password") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            )
+                    value = passwordConfirm,
+                    onValueChange = { onPasswordConfirmChanged(it) },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Password
+                    ),
+                    textStyle = MaterialTheme.typography.bodyMedium,
+                    placeholder = { Text("Confirm password") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -151,9 +160,9 @@ fun AuthDialog(isLoading: Boolean, isSignUp: Boolean,
                     onClick = onButtonPressed,
                     modifier = Modifier.padding(8.dp)
                 ) {
-                    if(isLoading){
+                    if (isLoading) {
                         CircularProgressIndicator(color = Color.White)
-                    }else{
+                    } else {
                         Text(if (isSignUp) "Sign Up" else "Sign In")
                     }
                 }
@@ -161,8 +170,9 @@ fun AuthDialog(isLoading: Boolean, isSignUp: Boolean,
         }
     }
 }
+
 @Composable
-fun ChoiceDialog(onSignInClick: () -> Unit, onSignUpClick: () -> Unit){
+fun ChoiceDialog(onSignInClick: () -> Unit, onSignUpClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()

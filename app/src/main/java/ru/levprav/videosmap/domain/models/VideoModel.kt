@@ -1,6 +1,5 @@
 package ru.levprav.videosmap.domain.models
 
-import android.location.Location
 import com.google.android.gms.maps.model.LatLng
 import java.util.Date
 
