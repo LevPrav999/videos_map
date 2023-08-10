@@ -1,4 +1,4 @@
-package ru.levprav.videosmap.presentation.signUp
+package ru.levprav.videosmap.presentation.auth
 
 data class AuthState(
     val isLoading: Boolean = false,
