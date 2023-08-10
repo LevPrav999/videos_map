@@ -1,7 +1,9 @@
 package ru.levprav.videosmap.presentation.user
 
+import android.net.Uri
+
 data class EditUserState(
-    val data: UserInfo,
+    val data: UserInfo = UserInfo(null, null, null),
 
     val isLoading: Boolean = false,
     val error: String? = null
@@ -9,7 +11,7 @@ data class EditUserState(
 
 
 data class UserInfo(
-    val name: String,
-    val description: String,
-    val imageUrl: String
+    val username: String?,
+    val description: String?,
+    val imageUrl: Uri?
 )
