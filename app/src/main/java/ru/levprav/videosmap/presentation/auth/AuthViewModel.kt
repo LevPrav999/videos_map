@@ -20,29 +20,27 @@ class AuthViewModel @Inject constructor(
     var state by mutableStateOf(AuthState())
         private set
 
-    /* fun signUp(email: String, password: String, passwordConfirm: String){
+    fun signUp(email: String, password: String, passwordConfirm: String){
         viewModelScope.launch {
-            repository.signUp(email, password, passwordConfirm).observeForever { result ->
-                print(1)
-                when (result) {
-                    is Resource.Error -> {
-                        if(result.message != ""){
-                            state = state.copy(isLoading = false, error = result.message)
+            state = state.copy(isLoading = true)
+
+            repository.signUp(email, password, passwordConfirm)
+                .collect { result ->
+                    state = when (result) {
+                        is Resource.Error -> {
+                            state.copy(isLoading = false, error = result.message)
+                        }
+                        is Resource.Success -> {
+                            state.copy(isLoading = false, error = null)
+                            // redirect to EditUserInfo screen
+                        }
+                        else -> {
+                            state.copy(isLoading = true)
                         }
                     }
-
-                    is Resource.Success -> {
-                        state = state.copy(isLoading = false, error = null)
-                        // redirect to EditUserInfo screen
-                    }
-
-                    is Resource.Loading -> {
-                        state = state.copy(isLoading = false)
-                    }
                 }
-            }
         }
-    } */
+    }
 
     fun signIn(email: String, password: String){
         viewModelScope.launch {
