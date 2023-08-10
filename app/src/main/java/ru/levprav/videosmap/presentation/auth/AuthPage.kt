@@ -57,7 +57,7 @@ fun AuthPage(navController: NavController, viewModel: AuthViewModel) {
                 dialogIndex = 0
             }, onButtonPressed = {
                 if(dialogIndex==1){
-                    //viewModel.signUp(email, password, passwordConfirm)
+                    viewModel.signUp(email, password, passwordConfirm)
                     keyboardController?.hide()
                 }else{
                     viewModel.signIn(email, password)
