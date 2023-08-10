@@ -1,18 +1,13 @@
-package ru.levprav.videosmap.presentation.signUp
+package ru.levprav.videosmap.presentation.auth
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush.Companion.radialGradient
-import androidx.compose.ui.graphics.Brush.Companion.sweepGradient
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
@@ -33,15 +28,18 @@ fun AuthPage(navController: NavController, viewModel: AuthViewModel) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val snackbarHostState = remember { SnackbarHostState() }
-    LaunchedEffect(viewModel.state.error) {
+    LaunchedEffect(viewModel.state) {
         viewModel.state.error?.let { error ->
-            snackbarHostState.showSnackbar(error)
+            if(!viewModel.state.isLoading){
+                snackbarHostState.showSnackbar(error)
+            }
         }
     }
 
     when(dialogIndex){
         0 -> ChoiceDialog(onSignInClick = { dialogIndex = 2}, onSignUpClick = { dialogIndex = 1})
         else -> AuthDialog(
+            isLoading = viewModel.state.isLoading,
             isSignUp = dialogIndex==1,
             email = email,
             password = password,
@@ -59,7 +57,7 @@ fun AuthPage(navController: NavController, viewModel: AuthViewModel) {
                 dialogIndex = 0
             }, onButtonPressed = {
                 if(dialogIndex==1){
-                    viewModel.signUp(email, password, passwordConfirm)
+                    //viewModel.signUp(email, password, passwordConfirm)
                     keyboardController?.hide()
                 }else{
                     viewModel.signIn(email, password)
@@ -73,7 +71,7 @@ fun AuthPage(navController: NavController, viewModel: AuthViewModel) {
 }
 
 @Composable
-fun AuthDialog( isSignUp: Boolean,
+fun AuthDialog(isLoading: Boolean, isSignUp: Boolean,
     email: String, password: String, passwordConfirm: String,
     onEmailChanged: (String) -> Unit, onPasswordChanged: (String) -> Unit, onPasswordConfirmChanged: (String) -> Unit, onBackPressed: () -> Unit, onButtonPressed: () -> Unit){
 
@@ -147,7 +145,11 @@ fun AuthDialog( isSignUp: Boolean,
                     onClick = onButtonPressed,
                     modifier = Modifier.padding(8.dp)
                 ) {
-                    Text(if (isSignUp) "Sign Up" else "Sign In")
+                    if(isLoading){
+                        CircularProgressIndicator(color = Color.White)
+                    }else{
+                        Text(if (isSignUp) "Sign Up" else "Sign In")
+                    }
                 }
             }
         }
