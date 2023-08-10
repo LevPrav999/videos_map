@@ -19,9 +19,29 @@ class UserRepositoryImpl @Inject constructor(
     private val api: UserApi
 ): UserRepository {
 
-    override suspend fun signUp(email: String, password: String, passwordConfirm: String): Flow<Resource<Unit>> {
-        TODO()
-    }
+    override suspend fun signUp(email: String, password: String, passwordConfirm: String): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+
+        if (email.isEmpty() || password.isEmpty() || passwordConfirm.isEmpty()) {
+            emit(Resource.Error("Please fill in all fields"))
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emit(Resource.Error("Incorrect Email format"))
+        } else if (password != passwordConfirm) {
+            emit(Resource.Error("Passwords don't match"))
+        } else {
+            val isUserExists = api.checkUserExists(email)
+            if (isUserExists) {
+                emit(Resource.Error("User with this Email already exists"))
+            } else {
+                try {
+                    api.signUp(email, password)
+                    emit(Resource.Success(Unit))
+                } catch (e: Exception) {
+                    emit(Resource.Error(e.message ?: "Unknown error"))
+                }
+            }
+        }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun signIn(email: String, password: String): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading())
