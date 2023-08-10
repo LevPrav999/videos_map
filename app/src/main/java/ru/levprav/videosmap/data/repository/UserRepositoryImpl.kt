@@ -19,8 +19,6 @@ class UserRepositoryImpl @Inject constructor(
     private val api: UserApi
 ): UserRepository {
 
-    private val signUpLiveData = MutableLiveData<Resource<Unit>>()
-    private val signInLiveData = MutableLiveData<Resource<Unit>>()
     override suspend fun signUp(email: String, password: String, passwordConfirm: String): Flow<Resource<Unit>> {
         TODO()
     }
