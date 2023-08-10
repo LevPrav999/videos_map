@@ -1,13 +1,14 @@
 package ru.levprav.videosmap.domain.repository
 
 import androidx.lifecycle.LiveData
+import kotlinx.coroutines.flow.Flow
 import ru.levprav.videosmap.domain.models.UserModel
 import ru.levprav.videosmap.domain.util.Resource
 
 interface UserRepository {
 
-    suspend fun signUp(email: String, password: String, passwordConfirm: String): LiveData<Resource<Unit>>
-    suspend fun signIn(email: String, password: String): LiveData<Resource<Unit>>
+    suspend fun signUp(email: String, password: String, passwordConfirm: String): Flow<Resource<Unit>>
+    suspend fun signIn(email: String, password: String): Flow<Resource<Unit>>
 
     suspend fun getMyProfile(): Resource<UserModel>
 
