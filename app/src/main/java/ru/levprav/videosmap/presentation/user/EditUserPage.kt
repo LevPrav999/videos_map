@@ -22,9 +22,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -48,6 +50,19 @@ fun EditUserPage(navController: NavController, viewModel: EditUserViewModel) {
     ) { uri: Uri? ->
         uri?.let {
             viewModel.getAvatar(it)
+        }
+    }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(viewModel.state) {
+        viewModel.state.error?.let { error ->
+            if (!viewModel.state.isLoading) {
+                snackbarHostState.showSnackbar(error)
+            }
+        }
+        if (viewModel.state.completed) {
+            navController.navigate("tabs_page")
+            viewModel.navigate()
         }
     }
 
