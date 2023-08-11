@@ -6,7 +6,9 @@ data class EditUserState(
     val data: UserInfo = UserInfo(null, null, null),
 
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+
+    val completed: Boolean = false
 )
 
 
