@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import ru.levprav.videosmap.presentation.auth.AuthPage
+import ru.levprav.videosmap.presentation.main.TabsPage
 import ru.levprav.videosmap.presentation.user.EditUserPage
 
 
@@ -22,13 +23,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-            NavHost(navController = navController, startDestination = "auth") {
+            NavHost(navController = navController, startDestination = "tabs_page") {
                 composable("auth") {
                     AuthPage(navController = navController, hiltViewModel())
                 }
 
                 composable("edit_user") {
                     EditUserPage(navController = navController, hiltViewModel())
+                }
+                composable("tabs_page") {
+                    TabsPage()
                 }
             }
         }
