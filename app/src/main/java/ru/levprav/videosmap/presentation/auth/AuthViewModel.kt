@@ -72,16 +72,16 @@ class AuthViewModel @Inject constructor(
 
     fun onEmailChanged(email: String){
         val data = state.data.copy(email = email)
-        state = state.copy(data = data)
+        state = state.copy(data = data, error = null)
     }
 
     fun onPasswordChanged(password: String){
         val data = state.data.copy(password = password)
-        state = state.copy(data = data)
+        state = state.copy(data = data, error = null)
     }
 
     fun onPasswordConfirmChanged(passwordConfirm: String){
         val data = state.data.copy(passwordConfirm = passwordConfirm)
-        state = state.copy(data = data)
+        state = state.copy(data = data, error = null)
     }
 }
