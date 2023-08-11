@@ -14,11 +14,11 @@ interface UserRepository {
 
     suspend fun signIn(email: String, password: String): Flow<Resource<Unit>>
 
-    suspend fun getMyProfile(): Resource<UserModel>
+    suspend fun getMyProfile(): Flow<Resource<UserModel>>
 
     suspend fun getProfileDetail(targetUid: String): Resource<UserModel>
 
-    suspend fun saveProfile(profile: UserModel): Resource<Unit>
+    suspend fun saveProfile(name: String?, description: String?, imageUrl: String?, isFollowing: Boolean?, followers: Set<Char>?, following: Set<Char>?, likeCount: Int?): Flow<Resource<Unit>>
 
     suspend fun follow(followedUid: String): Resource<Unit>
 
