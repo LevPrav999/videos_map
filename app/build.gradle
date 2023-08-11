@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace 'ru.levprav.videosmap'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "ru.levprav.videosmap"
@@ -73,6 +73,8 @@ dependencies {
     implementation libs.play.services.maps
     implementation libs.firebase.database
     implementation libs.firebase.storage
+
+    implementation 'androidx.appcompat:appcompat:1.4.1'
 
     implementation libs.firebase.firestore.ktx
 
