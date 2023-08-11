@@ -6,8 +6,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import ru.levprav.videosmap.domain.repository.UserRepository
+import ru.levprav.videosmap.domain.util.Resource
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,5 +40,30 @@ class EditUserViewModel @Inject constructor(
         state.data.imageUrl?.path?.let { Log.d("submit", it) }
         state.data.description?.let { Log.d("submit", it) }
         state.data.username?.let { Log.d("submit", it) }
+
+        viewModelScope.launch {
+            state = state.copy(isLoading = true)
+
+            repository.saveProfile(name = state.data.username!!, description = state.data.description!!, imageUrl = state.data.imageUrl!!.path, null, null, null, null)
+                .collect { result ->
+                    state = when (result) {
+                        is Resource.Error -> {
+                            state.copy(isLoading = false, error = result.message)
+                        }
+
+                        is Resource.Success -> {
+                            state.copy(isLoading = false, error = null, completed = true)
+                        }
+
+                        else -> {
+                            state.copy(isLoading = true)
+                        }
+                    }
+                }
+        }
+    }
+
+    fun navigate() {
+        state = state.copy(completed = false)
     }
 }
