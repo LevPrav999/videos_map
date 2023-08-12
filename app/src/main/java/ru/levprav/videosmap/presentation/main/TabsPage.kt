@@ -5,9 +5,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -55,21 +59,29 @@ fun TabsPage() {
             BottomNavigationBar(
                 items = listOf(
                     BottomNavItem(
-                        name = "Home",
-                        route = "home",
-                        icon = Icons.Default.Home
+                        name = "Map",
+                        route = "map",
+                        icon = Icons.Rounded.Home
                     ),
                     BottomNavItem(
-                        name = "Chat",
-                        route = "chat",
-                        icon = Icons.Default.Notifications,
-                        badgeCount = 23
+                        name = "Search",
+                        route = "search",
+                        icon = Icons.Default.Search
                     ),
                     BottomNavItem(
-                        name = "Settings",
-                        route = "settings",
-                        icon = Icons.Default.Settings,
-                        badgeCount = 214
+                        name = "Add",
+                        route = "add",
+                        icon = Icons.Default.Add
+                    ),
+                    BottomNavItem(
+                        name = "Notifications",
+                        route = "notifications",
+                        icon = Icons.Default.Notifications
+                    ),
+                    BottomNavItem(
+                        name = "Profile",
+                        route = "profile",
+                        icon = Icons.Default.Person
                     ),
                 ),
                 navController = navController,
@@ -84,15 +96,21 @@ fun TabsPage() {
 }
 @Composable
 fun Navigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "home") {
-        composable("home") {
-            HomeScreen()
+    NavHost(navController = navController, startDestination = "profile") {
+        composable("map") {
+            EmptyScreen()
         }
-        composable("chat") {
-            ChatScreen()
+        composable("search") {
+            EmptyScreen()
         }
-        composable("settings") {
-            SettingsScreen()
+        composable("add") {
+            EmptyScreen()
+        }
+        composable("notifications") {
+            EmptyScreen()
+        }
+        composable("profile") {
+            EmptyScreen()
         }
     }
 }
