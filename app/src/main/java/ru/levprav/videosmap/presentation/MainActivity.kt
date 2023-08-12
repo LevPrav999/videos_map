@@ -12,7 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import ru.levprav.videosmap.presentation.auth.AuthPage
 import ru.levprav.videosmap.presentation.main.TabsPage
-import ru.levprav.videosmap.presentation.user.EditUserPage
+import ru.levprav.videosmap.presentation.edituser.EditUserPage
 
 
 @AndroidEntryPoint
