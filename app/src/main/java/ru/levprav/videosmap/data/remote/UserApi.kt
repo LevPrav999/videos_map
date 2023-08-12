@@ -1,8 +1,10 @@
 package ru.levprav.videosmap.data.remote
 
+import android.net.Uri
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.levprav.videosmap.domain.models.UserModel
@@ -13,6 +15,7 @@ class UserApi @Inject constructor() {
 
     var firebaseFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     var firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    var firebaseStorage: FirebaseStorage = FirebaseStorage.getInstance()
 
 
     suspend fun signUp(email: String, password: String) = withContext(Dispatchers.IO) {
@@ -34,6 +37,10 @@ class UserApi @Inject constructor() {
 
     suspend fun getUserDocumentById(uid: String) = withContext(Dispatchers.IO){
         firebaseFirestore.collection("users").document(uid).get()
+    }
+
+    suspend fun saveUserAvatar(storagePath: String, image: Uri): String = withContext(Dispatchers.IO){
+        firebaseStorage.reference.child(storagePath).putFile(image).snapshot.storage.downloadUrl.toString()
     }
 
     suspend fun checkUserAuth(email: String): Boolean = withContext(Dispatchers.IO) {
