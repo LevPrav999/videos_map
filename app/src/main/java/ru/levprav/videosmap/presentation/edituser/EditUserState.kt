@@ -1,4 +1,4 @@
-package ru.levprav.videosmap.presentation.user
+package ru.levprav.videosmap.presentation.edituser
 
 import android.net.Uri
 
