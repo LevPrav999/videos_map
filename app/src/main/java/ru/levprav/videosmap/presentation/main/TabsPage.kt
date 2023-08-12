@@ -45,12 +45,6 @@ import androidx.navigation.compose.rememberNavController
 import ru.levprav.videosmap.presentation.auth.AuthViewModel
 
 
-data class BottomNavItem(
-    val name: String,
-    val route: String,
-    val icon: ImageVector,
-    val badgeCount: Int = 0
-)
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -114,7 +108,7 @@ fun BottomNavigationBar(
     val backStackEntry = navController.currentBackStackEntryAsState()
     NavigationBar(
         modifier = modifier,
-        containerColor = Color.DarkGray,
+        containerColor = Color.White,
         tonalElevation = 5.dp
     ) {
         items.forEach { item ->
