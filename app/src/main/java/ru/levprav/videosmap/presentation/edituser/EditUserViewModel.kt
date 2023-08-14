@@ -44,7 +44,7 @@ class EditUserViewModel @Inject constructor(
         viewModelScope.launch {
             state = state.copy(isLoading = true)
 
-            repository.saveProfile(name = state.data.username!!, description = state.data.description!!, imageUrl = state.data.imageUrl!!.path, null, null, null, null)
+            repository.saveProfile(name = state.data.username!!, description = state.data.description!!, imageUrl = state.data.imageUrl!!, null, null, null, null)
                 .collect { result ->
                     state = when (result) {
                         is Resource.Error -> {
