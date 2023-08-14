@@ -1,9 +1,13 @@
 package ru.levprav.videosmap.presentation.edituser
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
+import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -21,6 +25,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -38,8 +43,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.loader.content.CursorLoader
+import coil.compose.AsyncImage
 import ru.levprav.videosmap.R
+import java.io.File
+
 
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
@@ -69,7 +77,7 @@ fun EditUserPage(viewModel: EditUserViewModel) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Avatar(viewModel.state.data.imageUrl) {
+        Avatar(viewModel.state.data.imageUrl, viewModel.state.data.imageUrlNetwork, viewModel.state.isFromNetwork) {
             launcher.launch("image/*")
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -86,50 +94,71 @@ fun EditUserPage(viewModel: EditUserViewModel) {
                 .align(Alignment.End)
                 .padding(16.dp)
         ) {
-            Text(text = "Submit")
+            if(viewModel.state.isLoading){
+                CircularProgressIndicator(color = Color.White)
+            }else{
+                Text(text = "Submit")
+            }
         }
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
-fun Avatar(avatarUrl: Uri?, onClick: () -> Unit) {
+fun Avatar(avatarUri: Uri?, imageUrlNetwork: String?, isFromNetwork: Boolean, onClick: () -> Unit) {
     val bitmap = remember {
         mutableStateOf<Bitmap?>(null)
     }
-    avatarUrl?.let {
-        val source = ImageDecoder
-            .createSource(LocalContext.current.contentResolver, it)
-        bitmap.value = ImageDecoder.decodeBitmap(source)
+    if(!isFromNetwork){
+        avatarUri?.let {
+            val source = ImageDecoder
+                .createSource(LocalContext.current.contentResolver, avatarUri)
+            bitmap.value = ImageDecoder.decodeBitmap(source)
 
-        bitmap.value?.let { btm ->
+            bitmap.value?.let { btm ->
 
-            Image(
-                bitmap = btm.asImageBitmap(),
-                contentDescription = "Avatar",
-                modifier = Modifier
-                    .size(120.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary)
-                    .border(1.dp, Color.Black, CircleShape)
-                    .padding(8.dp)
-                    .clickable(onClick = onClick),
-                contentScale = ContentScale.Crop
-            )
-        }
-    } ?: Image(
-        painter = painterResource(id = R.drawable.ic_launcher_background),
-        contentDescription = "Avatar",
-        modifier = Modifier
-            .size(120.dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.primary)
-            .border(1.dp, Color.Black, CircleShape)
-            .padding(8.dp)
-            .clickable(onClick = onClick),
-        contentScale = ContentScale.Crop
-    )
+                Image(
+                    bitmap = btm.asImageBitmap(),
+                    contentDescription = "Avatar",
+                    modifier = Modifier
+                        .size(120.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary)
+                        .border(1.dp, Color.Black, CircleShape)
+                        .padding(8.dp)
+                        .clickable(onClick = onClick),
+                    contentScale = ContentScale.Crop
+                )
+            }
+        } ?: Image(
+            painter = painterResource(id = R.drawable.ic_launcher_background),
+            contentDescription = "Avatar",
+            modifier = Modifier
+                .size(120.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primary)
+                .border(1.dp, Color.Black, CircleShape)
+                .padding(8.dp)
+                .clickable(onClick = onClick),
+            contentScale = ContentScale.Crop
+        )
+    }else{
+        AsyncImage(
+            model = imageUrlNetwork,
+            contentDescription = null,
+            modifier = Modifier
+                .size(120.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primary)
+                .border(1.dp, Color.Black, CircleShape)
+                .padding(8.dp)
+                .clickable(onClick = onClick),
+            contentScale = ContentScale.Crop
+        )
+    }
+
 }
+
 
 @Composable
 fun Field(text: String, value: String, onValueChange: (String) -> Unit) {
