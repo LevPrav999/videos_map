@@ -7,6 +7,10 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import ru.levprav.videosmap.navigation.NavigationManager
 import javax.inject.Singleton
 
 @Module
@@ -18,4 +22,13 @@ object AppModule {
     fun provideFusedLocationProviderClient(app: Application): FusedLocationProviderClient {
         return LocationServices.getFusedLocationProviderClient(app)
     }
+
+    @Singleton
+    @Provides
+    fun providesCoroutineScope(): CoroutineScope {
+        return CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    }
+    @Singleton
+    @Provides
+    fun providesNavigationManager(coroutineScope: CoroutineScope) = NavigationManager(coroutineScope)
 }
