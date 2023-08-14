@@ -84,7 +84,7 @@ class UserRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override suspend fun saveProfile(name: String?, description: String?, imageUrl: Uri?, isFollowing: Boolean?, followers: List<String>?, following: List<String>?, likeCount: Int?): Flow<Resource<Unit>> = flow {
+    override suspend fun saveProfile(name: String?, description: String?, localUri: Uri?,  networkUrl: String?, isFollowing: Boolean?, followers: List<String>?, following: List<String>?, likeCount: Int?): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading())
         val id = api.firebaseAuth.currentUser!!.uid
         if(api.checkUserDocumentExists(id)){
@@ -92,12 +92,18 @@ class UserRepositoryImpl @Inject constructor(
             val task = api.getUserDocumentById(id)
             Tasks.await(task)
             val oldUser = task.result.data!!.toUserModel()
-            val avatar = api.saveUserAvatar("profilePictures/$id", imageUrl!!)
+
+            val avatar = if(localUri != null){
+                api.saveUserAvatar("profilePictures/$id", localUri)
+            }else {
+                networkUrl!!
+            }
+
             val user = UserModel(
                 id = id,
                 name = name ?: oldUser.name,
                 description = description ?: oldUser.description,
-                imageUrl = avatar,
+                imageUrl = avatar ?: oldUser.imageUrl,
                 isFollowing = isFollowing ?: oldUser.isFollowing,
                 followers = followers ?: oldUser.followers,
                 following = following ?: oldUser.following,
@@ -106,7 +112,7 @@ class UserRepositoryImpl @Inject constructor(
             api.updateUserDocument(user)
 
         }else{
-            val avatar = api.saveUserAvatar("profilePictures/$id", imageUrl!!)
+            val avatar = api.saveUserAvatar("profilePictures/$id", localUri!!)
 
             val user = UserModel(
                 id = id,
