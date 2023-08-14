@@ -8,7 +8,6 @@ data class EditUserState(
     val isLoading: Boolean = false,
     val error: String? = null,
 
-    val completed: Boolean = false
 )
 
 

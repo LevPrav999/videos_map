@@ -52,7 +52,7 @@ class EditUserViewModel @Inject constructor(
                         }
 
                         is Resource.Success -> {
-                            state.copy(isLoading = false, error = null, completed = true)
+                            state.copy(isLoading = false, error = null)
                         }
 
                         else -> {
@@ -63,7 +63,4 @@ class EditUserViewModel @Inject constructor(
         }
     }
 
-    fun navigate() {
-        state = state.copy(completed = false)
-    }
 }

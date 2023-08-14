@@ -43,7 +43,7 @@ import ru.levprav.videosmap.R
 
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
-fun EditUserPage(navController: NavController, viewModel: EditUserViewModel) {
+fun EditUserPage(viewModel: EditUserViewModel) {
     val launcher = rememberLauncherForActivityResult(
         contract =
         ActivityResultContracts.GetContent()
@@ -59,10 +59,6 @@ fun EditUserPage(navController: NavController, viewModel: EditUserViewModel) {
             if (!viewModel.state.isLoading) {
                 snackbarHostState.showSnackbar(error)
             }
-        }
-        if (viewModel.state.completed) {
-            navController.navigate("tabs_page")
-            viewModel.navigate()
         }
     }
 
