@@ -28,18 +28,18 @@ class AuthViewModel @Inject constructor(
 
             repository.signUp(email, password, passwordConfirm)
                 .collect { result ->
-                    state = when (result) {
+                    when (result) {
                         is Resource.Error -> {
-                            state.copy(isLoading = false, error = result.message)
+                            state = state.copy(isLoading = false, error = result.message)
                         }
 
                         is Resource.Success -> {
-                            state.copy(isLoading = false, error = null)
-
+                            state = state.copy(isLoading = false, error = null)
+                            navigationManager.navigate(NavigationDirections.editUser)
                         }
 
                         else -> {
-                            state.copy(isLoading = true)
+                            state = state.copy(isLoading = true)
                         }
                     }
                 }
