@@ -9,11 +9,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ru.levprav.videosmap.domain.repository.UserRepository
 import ru.levprav.videosmap.domain.util.Resource
+import ru.levprav.videosmap.navigation.NavigationDirections
+import ru.levprav.videosmap.navigation.NavigationManager
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val repository: UserRepository
+    private val repository: UserRepository,
+    private val navigationManager: NavigationManager
 ) : ViewModel() {
 
     var state by mutableStateOf(AuthState())
@@ -31,7 +34,7 @@ class AuthViewModel @Inject constructor(
                         }
 
                         is Resource.Success -> {
-                            state.copy(isLoading = false, error = null, toEditInfo = true)
+                            state.copy(isLoading = false, error = null)
 
                         }
 
@@ -49,39 +52,38 @@ class AuthViewModel @Inject constructor(
 
             repository.signIn(email, password)
                 .collect { result ->
-                    state = when (result) {
+                    when (result) {
                         is Resource.Error -> {
-                            state.copy(isLoading = false, error = result.message)
+                            state = state.copy(isLoading = false, error = result.message)
                         }
 
                         is Resource.Success -> {
-                            state.copy(isLoading = false, error = null, toEditInfo = true)
+                            state = state.copy(isLoading = false, error = null, data = null)
+                            navigationManager.navigate(NavigationDirections.editUser)
+
                         }
 
                         else -> {
-                            state.copy(isLoading = true)
+                            state = state.copy(isLoading = true)
                         }
                     }
                 }
         }
     }
 
-    fun navigate() {
-        state = state.copy(toEditInfo = false)
-    }
 
     fun onEmailChanged(email: String){
-        val data = state.data.copy(email = email)
+        val data = state.data?.copy(email = email)
         state = state.copy(data = data, error = null)
     }
 
     fun onPasswordChanged(password: String){
-        val data = state.data.copy(password = password)
+        val data = state.data?.copy(password = password)
         state = state.copy(data = data, error = null)
     }
 
     fun onPasswordConfirmChanged(passwordConfirm: String){
-        val data = state.data.copy(passwordConfirm = passwordConfirm)
+        val data = state.data?.copy(passwordConfirm = passwordConfirm)
         state = state.copy(data = data, error = null)
     }
 }

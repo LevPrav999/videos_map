@@ -1,9 +1,7 @@
 package ru.levprav.videosmap.presentation.auth
 
 data class AuthState(
-    val data: AuthData = AuthData(null, null, null),
-
-    val toEditInfo: Boolean = false,
+    val data: AuthData? = AuthData(null, null, null),
     val isLoading: Boolean = false,
     val error: String? = null
 )

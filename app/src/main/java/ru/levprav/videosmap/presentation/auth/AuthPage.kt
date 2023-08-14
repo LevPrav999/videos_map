@@ -17,7 +17,7 @@ import androidx.navigation.NavController
 @SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun AuthPage(navController: NavController, viewModel: AuthViewModel) {
+fun AuthPage(viewModel: AuthViewModel) {
     var dialogIndex by remember { mutableStateOf(0) } // 0 - choice 1 - signUp 2 - signIn
 
 
@@ -30,11 +30,6 @@ fun AuthPage(navController: NavController, viewModel: AuthViewModel) {
                 snackbarHostState.showSnackbar(error)
             }
         }
-        if (viewModel.state.toEditInfo) {
-            navController.popBackStack()
-            navController.navigate("edit_user")
-            viewModel.navigate()
-        }
     }
 
 
@@ -43,9 +38,9 @@ fun AuthPage(navController: NavController, viewModel: AuthViewModel) {
         else -> AuthDialog(
             isLoading = viewModel.state.isLoading,
             isSignUp = dialogIndex == 1,
-            email = viewModel.state.data.email ?: "",
-            password = viewModel.state.data.password ?: "",
-            passwordConfirm = viewModel.state.data.passwordConfirm ?: "",
+            email = viewModel.state.data?.email ?: "",
+            password = viewModel.state.data?.password ?: "",
+            passwordConfirm = viewModel.state.data?.passwordConfirm ?: "",
             onEmailChanged = { updatedValue ->
                 viewModel.onEmailChanged(updatedValue)
 
@@ -59,8 +54,8 @@ fun AuthPage(navController: NavController, viewModel: AuthViewModel) {
                 dialogIndex = 0
             }, onButtonPressed = {
                 if (dialogIndex == 1) {
-                    viewModel.state.data.email?.let { viewModel.state.data.password?.let { it1 ->
-                        viewModel.state.data.passwordConfirm?.let { it2 ->
+                    viewModel.state.data?.email?.let { viewModel.state.data?.password?.let { it1 ->
+                        viewModel.state.data?.passwordConfirm?.let { it2 ->
                             viewModel.signUp(it,
                                 it1, it2
                             )
@@ -68,7 +63,7 @@ fun AuthPage(navController: NavController, viewModel: AuthViewModel) {
                     } }
                     keyboardController?.hide()
                 } else {
-                    viewModel.state.data.email?.let { viewModel.state.data.password?.let { it1 ->
+                    viewModel.state.data?.email?.let { viewModel.state.data?.password?.let { it1 ->
                         viewModel.signIn(it,
                             it1
                         )
