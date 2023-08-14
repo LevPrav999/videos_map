@@ -3,13 +3,19 @@ package ru.levprav.videosmap.data.remote
 import android.net.Uri
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.auth.User
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.levprav.videosmap.domain.models.UserModel
 import ru.levprav.videosmap.domain.models.toMap
+import java.io.File
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 class UserApi @Inject constructor() {
 
@@ -22,8 +28,10 @@ class UserApi @Inject constructor() {
         firebaseAuth.createUserWithEmailAndPassword(email, password)
     }
 
-    suspend fun signIn(email: String, password: String) = withContext(Dispatchers.IO) {
-        firebaseAuth.signInWithEmailAndPassword(email, password)
+    suspend fun signIn(email: String, password: String): FirebaseUser? = withContext(Dispatchers.IO) {
+        val task = firebaseAuth.signInWithEmailAndPassword(email, password)
+        Tasks.await(task)
+        task.result.user
     }
 
 
@@ -40,7 +48,28 @@ class UserApi @Inject constructor() {
     }
 
     suspend fun saveUserAvatar(storagePath: String, image: Uri): String = withContext(Dispatchers.IO){
-        firebaseStorage.reference.child(storagePath).putFile(image).snapshot.storage.downloadUrl.toString()
+        val storageReference = firebaseStorage.reference
+
+        val imageRef = storageReference.child(storagePath)
+        val uploadTask = imageRef.putFile(image)
+
+        suspendCoroutine { continuation ->
+            uploadTask.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val snapshot = task.result
+                    snapshot?.storage?.downloadUrl?.addOnCompleteListener { downloadUrlTask ->
+                        if (downloadUrlTask.isSuccessful) {
+                            val downloadUrl = downloadUrlTask.result.toString()
+                            continuation.resume(downloadUrl)
+                        } else {
+                            continuation.resumeWithException(downloadUrlTask.exception ?: Exception("Error getting download URL"))
+                        }
+                    }
+                } else {
+                    continuation.resumeWithException(task.exception ?: Exception("Error uploading file"))
+                }
+            }
+        }
     }
 
     suspend fun checkUserAuth(email: String): Boolean = withContext(Dispatchers.IO) {
