@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-            NavHost(navController = navController, startDestination = "tabs_page") {
+            NavHost(navController = navController, startDestination = "auth") {
                 composable("auth") {
                     AuthPage(navController = navController, hiltViewModel())
                 }
