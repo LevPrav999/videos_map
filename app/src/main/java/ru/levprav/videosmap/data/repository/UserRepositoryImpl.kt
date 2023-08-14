@@ -1,5 +1,6 @@
 package ru.levprav.videosmap.data.repository
 
+import android.net.Uri
 import com.google.android.gms.tasks.Tasks
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -57,8 +58,12 @@ class UserRepositoryImpl @Inject constructor(
                 emit(Resource.Error("User with this Email doesn't exists"))
             } else {
                 try {
-                    api.signIn(email, password)
-                    emit(Resource.Success(Unit))
+                    val user = api.signIn(email, password)
+                    if (user != null){
+                        emit(Resource.Success(Unit))
+                    }else{
+                        emit(Resource.Error("Wrong password"))
+                    }
                 } catch (e: Exception) {
                     emit(Resource.Error(e.message ?: "Unknown error"))
                 }
@@ -79,7 +84,7 @@ class UserRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override suspend fun saveProfile(name: String?, description: String?, imageUrl: String?, isFollowing: Boolean?, followers: Set<Char>?, following: Set<Char>?, likeCount: Int?): Flow<Resource<Unit>> = flow {
+    override suspend fun saveProfile(name: String?, description: String?, imageUrl: Uri?, isFollowing: Boolean?, followers: List<String>?, following: List<String>?, likeCount: Int?): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading())
         val id = api.firebaseAuth.currentUser!!.uid
         if(api.checkUserDocumentExists(id)){
@@ -87,12 +92,12 @@ class UserRepositoryImpl @Inject constructor(
             val task = api.getUserDocumentById(id)
             Tasks.await(task)
             val oldUser = task.result.data!!.toUserModel()
-
+            val avatar = api.saveUserAvatar("profilePictures/$id", imageUrl!!)
             val user = UserModel(
                 id = id,
                 name = name ?: oldUser.name,
                 description = description ?: oldUser.description,
-                imageUrl = imageUrl ?: oldUser.imageUrl,
+                imageUrl = avatar,
                 isFollowing = isFollowing ?: oldUser.isFollowing,
                 followers = followers ?: oldUser.followers,
                 following = following ?: oldUser.following,
@@ -101,14 +106,16 @@ class UserRepositoryImpl @Inject constructor(
             api.updateUserDocument(user)
 
         }else{
+            val avatar = api.saveUserAvatar("profilePictures/$id", imageUrl!!)
+
             val user = UserModel(
                 id = id,
                 name = name!!,
                 description = description!!,
-                imageUrl = imageUrl!!,
+                imageUrl = avatar,
                 isFollowing = false,
-                followers = setOf(),
-                following = setOf(),
+                followers = listOf(),
+                following = listOf(),
                 likeCount = 0,
             )
             api.addUserDocument(user)
