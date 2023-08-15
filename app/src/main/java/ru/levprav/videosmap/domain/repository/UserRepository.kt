@@ -19,7 +19,16 @@ interface UserRepository {
 
     suspend fun getProfileDetail(targetUid: String): Resource<UserModel>
 
-    suspend fun saveProfile(name: String?, description: String?, localUri: Uri?,  networkUrl: String?, isFollowing: Boolean?, followers: List<String>?, following: List<String>?, likeCount: Int?): Flow<Resource<Unit>>
+    suspend fun saveProfile(
+        name: String?,
+        description: String?,
+        localUri: Uri?,
+        networkUrl: String?,
+        isFollowing: Boolean?,
+        followers: List<String>?,
+        following: List<String>?,
+        likeCount: Int?
+    ): Flow<Resource<Unit>>
 
     suspend fun follow(followedUid: String): Resource<Unit>
 
