@@ -14,7 +14,7 @@ object NavigationDirections {
 
     }
 
-    val authentication  = object : NavigationCommand {
+    val authentication = object : NavigationCommand {
 
         override val arguments = emptyList<NamedNavArgument>()
 
