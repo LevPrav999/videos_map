@@ -1,14 +1,12 @@
 package ru.levprav.videosmap.data.repository
 
 import android.net.Uri
-import com.google.android.gms.tasks.Tasks
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import ru.levprav.videosmap.data.remote.UserApi
 import ru.levprav.videosmap.domain.models.UserModel
-import ru.levprav.videosmap.domain.models.toUserModel
 import ru.levprav.videosmap.domain.repository.UserRepository
 import ru.levprav.videosmap.domain.util.Resource
 import javax.inject.Inject
@@ -59,9 +57,9 @@ class UserRepositoryImpl @Inject constructor(
             } else {
                 try {
                     val user = api.signIn(email, password)
-                    if (user != null){
+                    if (user != null) {
                         emit(Resource.Success(Unit))
-                    }else{
+                    } else {
                         emit(Resource.Error("Wrong password"))
                     }
                 } catch (e: Exception) {
@@ -83,16 +81,25 @@ class UserRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override suspend fun saveProfile(name: String?, description: String?, localUri: Uri?,  networkUrl: String?, isFollowing: Boolean?, followers: List<String>?, following: List<String>?, likeCount: Int?): Flow<Resource<Unit>> = flow {
+    override suspend fun saveProfile(
+        name: String?,
+        description: String?,
+        localUri: Uri?,
+        networkUrl: String?,
+        isFollowing: Boolean?,
+        followers: List<String>?,
+        following: List<String>?,
+        likeCount: Int?
+    ): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading())
         val id = api.firebaseAuth.currentUser!!.uid
-        if(api.checkUserDocumentExists(id)){
+        if (api.checkUserDocumentExists(id)) {
 
             val oldUser = api.getUserDocumentById(id)
 
-            val avatar = if(localUri != null){
+            val avatar = if (localUri != null) {
                 api.saveUserAvatar("profilePictures/$id", localUri)
-            }else {
+            } else {
                 networkUrl!!
             }
 
@@ -108,7 +115,7 @@ class UserRepositoryImpl @Inject constructor(
             )
             api.updateUserDocument(user)
 
-        }else{
+        } else {
             val avatar = api.saveUserAvatar("profilePictures/$id", localUri!!)
 
             val user = UserModel(
