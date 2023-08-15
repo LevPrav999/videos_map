@@ -20,7 +20,7 @@ object NavigationDirections {
 
         override val destination = "auth"
 
-        override val clearStack = false
+        override val clearStack = true
 
     }
 
@@ -38,6 +38,14 @@ object NavigationDirections {
         override val arguments = emptyList<NamedNavArgument>()
 
         override val destination = "tabs_page"
+
+        override val clearStack = true
+    }
+    val splash = object : NavigationCommand {
+
+        override val arguments = emptyList<NamedNavArgument>()
+
+        override val destination = "splash"
 
         override val clearStack = true
     }
