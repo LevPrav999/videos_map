@@ -17,6 +17,7 @@ import ru.levprav.videosmap.navigation.NavigationManager
 import ru.levprav.videosmap.presentation.auth.AuthPage
 import ru.levprav.videosmap.presentation.main.TabsPage
 import ru.levprav.videosmap.presentation.edituser.EditUserPage
+import ru.levprav.videosmap.presentation.splash.SplashScreen
 import javax.inject.Inject
 
 
@@ -40,7 +41,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
-            NavHost(navController = navController, startDestination = NavigationDirections.authentication.destination) {
+            NavHost(navController = navController, startDestination = NavigationDirections.splash.destination) {
                 composable(NavigationDirections.authentication.destination) {
                     AuthPage(hiltViewModel())
                 }
@@ -50,6 +51,9 @@ class MainActivity : ComponentActivity() {
                 }
                 composable(NavigationDirections.mainScreen.destination) {
                     TabsPage()
+                }
+                composable(NavigationDirections.splash.destination) {
+                    SplashScreen(hiltViewModel())
                 }
             }
         }
