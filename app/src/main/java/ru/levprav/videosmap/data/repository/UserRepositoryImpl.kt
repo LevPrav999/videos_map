@@ -75,8 +75,7 @@ class UserRepositoryImpl @Inject constructor(
         emit(Resource.Loading())
         api.firebaseAuth.currentUser?.let {
             val result = api.getUserDocumentById(it.uid)
-            Tasks.await(result)
-            emit(Resource.Success(result.result.data?.toUserModel()))
+            emit(Resource.Success(result))
         } ?: emit(Resource.Error("User not found"))
     }.flowOn(Dispatchers.IO)
 
@@ -89,9 +88,7 @@ class UserRepositoryImpl @Inject constructor(
         val id = api.firebaseAuth.currentUser!!.uid
         if(api.checkUserDocumentExists(id)){
 
-            val task = api.getUserDocumentById(id)
-            Tasks.await(task)
-            val oldUser = task.result.data!!.toUserModel()
+            val oldUser = api.getUserDocumentById(id)
 
             val avatar = if(localUri != null){
                 api.saveUserAvatar("profilePictures/$id", localUri)
@@ -103,7 +100,7 @@ class UserRepositoryImpl @Inject constructor(
                 id = id,
                 name = name ?: oldUser.name,
                 description = description ?: oldUser.description,
-                imageUrl = avatar ?: oldUser.imageUrl,
+                imageUrl = avatar,
                 isFollowing = isFollowing ?: oldUser.isFollowing,
                 followers = followers ?: oldUser.followers,
                 following = following ?: oldUser.following,
