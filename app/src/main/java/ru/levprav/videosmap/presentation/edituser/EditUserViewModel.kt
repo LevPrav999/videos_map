@@ -1,7 +1,6 @@
 package ru.levprav.videosmap.presentation.edituser
 
 import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -30,8 +29,17 @@ class EditUserViewModel @Inject constructor(
                     state = when (result) {
 
                         is Resource.Success -> {
-                            val data = state.data.copy(username = result.data?.name, description = result.data?.description, imageUrlNetwork = result.data?.imageUrl)
-                            state.copy(isLoading = false, error = null, data = data, isFromNetwork = true)
+                            val data = state.data.copy(
+                                username = result.data?.name,
+                                description = result.data?.description,
+                                imageUrlNetwork = result.data?.imageUrl
+                            )
+                            state.copy(
+                                isLoading = false,
+                                error = null,
+                                data = data,
+                                isFromNetwork = true
+                            )
                         }
 
                         is Resource.Loading -> {
@@ -65,7 +73,16 @@ class EditUserViewModel @Inject constructor(
 
         viewModelScope.launch {
             state = state.copy(isLoading = true)
-            repository.saveProfile(name = state.data.username!!, description = state.data.description!!, localUri = state.data.imageUrl, networkUrl = state.data.imageUrlNetwork, null, null, null, null)
+            repository.saveProfile(
+                name = state.data.username!!,
+                description = state.data.description!!,
+                localUri = state.data.imageUrl,
+                networkUrl = state.data.imageUrlNetwork,
+                null,
+                null,
+                null,
+                null
+            )
                 .collect { result ->
                     when (result) {
                         is Resource.Error -> {

@@ -12,7 +12,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalComposeUiApi::class)
@@ -54,20 +53,26 @@ fun AuthPage(viewModel: AuthViewModel) {
                 dialogIndex = 0
             }, onButtonPressed = {
                 if (dialogIndex == 1) {
-                    viewModel.state.data?.email?.let { viewModel.state.data?.password?.let { it1 ->
-                        viewModel.state.data?.passwordConfirm?.let { it2 ->
-                            viewModel.signUp(it,
-                                it1, it2
-                            )
+                    viewModel.state.data?.email?.let {
+                        viewModel.state.data?.password?.let { it1 ->
+                            viewModel.state.data?.passwordConfirm?.let { it2 ->
+                                viewModel.signUp(
+                                    it,
+                                    it1, it2
+                                )
+                            }
                         }
-                    } }
+                    }
                     keyboardController?.hide()
                 } else {
-                    viewModel.state.data?.email?.let { viewModel.state.data?.password?.let { it1 ->
-                        viewModel.signIn(it,
-                            it1
-                        )
-                    } }
+                    viewModel.state.data?.email?.let {
+                        viewModel.state.data?.password?.let { it1 ->
+                            viewModel.signIn(
+                                it,
+                                it1
+                            )
+                        }
+                    }
                     keyboardController?.hide()
                 }
             })

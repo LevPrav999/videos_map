@@ -11,4 +11,4 @@ data class AuthData(
     val password: String?,
     val passwordConfirm: String?,
 
-)
+    )

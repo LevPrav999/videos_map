@@ -1,13 +1,9 @@
 package ru.levprav.videosmap.presentation.edituser
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
-import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -43,10 +39,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.loader.content.CursorLoader
 import coil.compose.AsyncImage
 import ru.levprav.videosmap.R
-import java.io.File
 
 
 @RequiresApi(Build.VERSION_CODES.P)
@@ -77,7 +71,11 @@ fun EditUserPage(viewModel: EditUserViewModel) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Avatar(viewModel.state.data.imageUrl, viewModel.state.data.imageUrlNetwork, viewModel.state.isFromNetwork) {
+        Avatar(
+            viewModel.state.data.imageUrl,
+            viewModel.state.data.imageUrlNetwork,
+            viewModel.state.isFromNetwork
+        ) {
             launcher.launch("image/*")
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -94,9 +92,9 @@ fun EditUserPage(viewModel: EditUserViewModel) {
                 .align(Alignment.End)
                 .padding(16.dp)
         ) {
-            if(viewModel.state.isLoading){
+            if (viewModel.state.isLoading) {
                 CircularProgressIndicator(color = Color.White)
-            }else{
+            } else {
                 Text(text = "Submit")
             }
         }
@@ -109,7 +107,7 @@ fun Avatar(avatarUri: Uri?, imageUrlNetwork: String?, isFromNetwork: Boolean, on
     val bitmap = remember {
         mutableStateOf<Bitmap?>(null)
     }
-    if(!isFromNetwork){
+    if (!isFromNetwork) {
         avatarUri?.let {
             val source = ImageDecoder
                 .createSource(LocalContext.current.contentResolver, avatarUri)
@@ -142,7 +140,7 @@ fun Avatar(avatarUri: Uri?, imageUrlNetwork: String?, isFromNetwork: Boolean, on
                 .clickable(onClick = onClick),
             contentScale = ContentScale.Crop
         )
-    }else{
+    } else {
         AsyncImage(
             model = imageUrlNetwork,
             contentDescription = null,

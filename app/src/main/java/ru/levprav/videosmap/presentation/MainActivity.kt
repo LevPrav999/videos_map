@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,8 +14,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.levprav.videosmap.navigation.NavigationDirections
 import ru.levprav.videosmap.navigation.NavigationManager
 import ru.levprav.videosmap.presentation.auth.AuthPage
-import ru.levprav.videosmap.presentation.main.TabsPage
 import ru.levprav.videosmap.presentation.edituser.EditUserPage
+import ru.levprav.videosmap.presentation.main.TabsPage
 import ru.levprav.videosmap.presentation.splash.SplashScreen
 import javax.inject.Inject
 
@@ -26,22 +25,26 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var navigationManager: NavigationManager
+
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-            LaunchedEffect(navigationManager.commands){
-                navigationManager.commands.collect{ command ->
+            LaunchedEffect(navigationManager.commands) {
+                navigationManager.commands.collect { command ->
                     if (command.destination.isNotEmpty()) {
-                        if(command.clearStack){
+                        if (command.clearStack) {
                             navController.popBackStack()
                         }
                         navController.navigate(command.destination)
                     }
                 }
             }
-            NavHost(navController = navController, startDestination = NavigationDirections.splash.destination) {
+            NavHost(
+                navController = navController,
+                startDestination = NavigationDirections.splash.destination
+            ) {
                 composable(NavigationDirections.authentication.destination) {
                     AuthPage(hiltViewModel())
                 }
