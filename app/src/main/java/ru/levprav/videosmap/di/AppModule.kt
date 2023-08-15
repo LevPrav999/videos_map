@@ -28,7 +28,9 @@ object AppModule {
     fun providesCoroutineScope(): CoroutineScope {
         return CoroutineScope(SupervisorJob() + Dispatchers.Default)
     }
+
     @Singleton
     @Provides
-    fun providesNavigationManager(coroutineScope: CoroutineScope) = NavigationManager(coroutineScope)
+    fun providesNavigationManager(coroutineScope: CoroutineScope) =
+        NavigationManager(coroutineScope)
 }
