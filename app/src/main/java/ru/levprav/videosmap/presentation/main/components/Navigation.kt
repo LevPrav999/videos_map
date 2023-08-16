@@ -1,10 +1,12 @@
 package ru.levprav.videosmap.presentation.main.components
 
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import ru.levprav.videosmap.presentation.main.EmptyScreen
+import ru.levprav.videosmap.presentation.profile.ProfilePage
 
 @Composable
 fun Navigation(navController: NavHostController) {
@@ -22,7 +24,7 @@ fun Navigation(navController: NavHostController) {
             EmptyScreen()
         }
         composable("profile") {
-            EmptyScreen()
+            ProfilePage(hiltViewModel())
         }
     }
 }
