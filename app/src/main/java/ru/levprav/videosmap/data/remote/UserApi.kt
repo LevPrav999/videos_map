@@ -17,18 +17,18 @@ import kotlin.coroutines.suspendCoroutine
 
 class UserApi @Inject constructor() {
 
-    var firebaseFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
-    var firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    var firebaseStorage: FirebaseStorage = FirebaseStorage.getInstance()
+    private var _firebaseFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private var _firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private var _firebaseStorage: FirebaseStorage = FirebaseStorage.getInstance()
 
 
     suspend fun signUp(email: String, password: String) = withContext(Dispatchers.IO) {
-        firebaseAuth.createUserWithEmailAndPassword(email, password)
+        _firebaseAuth.createUserWithEmailAndPassword(email, password)
     }
 
     suspend fun signIn(email: String, password: String): FirebaseUser? =
         withContext(Dispatchers.IO) {
-            val signInTask = firebaseAuth.signInWithEmailAndPassword(email, password)
+            val signInTask = _firebaseAuth.signInWithEmailAndPassword(email, password)
 
             suspendCoroutine { continuation ->
                 signInTask.addOnCompleteListener { task ->
@@ -45,18 +45,18 @@ class UserApi @Inject constructor() {
 
 
     suspend fun addUserDocument(user: UserModel) = withContext(Dispatchers.IO) {
-        firebaseFirestore.collection("users").document(user.id).set(user.toMap())
+        _firebaseFirestore.collection("users").document(user.id).set(user.toMap())
     }
 
     suspend fun updateUserDocument(user: UserModel) = withContext(Dispatchers.IO) {
-        firebaseFirestore.collection("users").document(user.id).update(user.toMap())
+        _firebaseFirestore.collection("users").document(user.id).update(user.toMap())
     }
 
     suspend fun getUserDocumentById(uid: String): UserModel = withContext(Dispatchers.IO) {
 
 
         suspendCoroutine { continuation ->
-            firebaseFirestore.collection("users").document(uid).get()
+            _firebaseFirestore.collection("users").document(uid).get()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         val snapshot = task.result
@@ -79,7 +79,7 @@ class UserApi @Inject constructor() {
 
     suspend fun saveUserAvatar(storagePath: String, image: Uri): String =
         withContext(Dispatchers.IO) {
-            val storageReference = firebaseStorage.reference
+            val storageReference = _firebaseStorage.reference
 
             val imageRef = storageReference.child(storagePath)
             val uploadTask = imageRef.putFile(image)
@@ -109,7 +109,7 @@ class UserApi @Inject constructor() {
         }
 
     suspend fun checkUserAuth(email: String): Boolean = withContext(Dispatchers.IO) {
-        val fetchTask = firebaseAuth.fetchSignInMethodsForEmail(email)
+        val fetchTask = _firebaseAuth.fetchSignInMethodsForEmail(email)
 
         suspendCoroutine { continuation ->
             fetchTask.addOnCompleteListener { task ->
@@ -125,7 +125,7 @@ class UserApi @Inject constructor() {
     }
 
     suspend fun checkUserDocumentExists(uid: String): Boolean = withContext(Dispatchers.IO) {
-        val fetchTask = firebaseFirestore.collection("users").document(uid).get()
+        val fetchTask = _firebaseFirestore.collection("users").document(uid).get()
 
         suspendCoroutine { continuation ->
             fetchTask.addOnCompleteListener { task ->
@@ -139,5 +139,8 @@ class UserApi @Inject constructor() {
             }
         }
     }
+
+
+    fun getCurrentUserId(): String? = _firebaseAuth.currentUser?.uid
 
 }
