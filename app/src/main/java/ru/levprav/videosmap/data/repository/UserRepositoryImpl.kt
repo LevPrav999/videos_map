@@ -77,9 +77,16 @@ class UserRepositoryImpl @Inject constructor(
         } ?: emit(Resource.Error("User not found"))
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun getProfileDetail(targetUid: String): Resource<UserModel> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getProfileDetail(targetUid: String): Flow<Resource<UserModel>> = flow<Resource<UserModel>> {
+        emit(Resource.Loading())
+        try{
+            val result = api.getUserDocumentById(targetUid)
+            emit(Resource.Success(result))
+        }catch (e: Exception){
+            emit(Resource.Error(e.message ?: "Unknown error"))
+        }
+
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun saveProfile(
         name: String?,
@@ -133,19 +140,19 @@ class UserRepositoryImpl @Inject constructor(
         emit(Resource.Success(Unit))
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun follow(followedUid: String): Resource<Unit> {
+    override suspend fun follow(followedUid: String): Flow<Resource<Unit>> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun unfollow(followedUid: String): Resource<Unit> {
+    override suspend fun unfollow(followedUid: String): Flow<Resource<Unit>> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getFollowers(uid: String): Resource<List<UserModel>> {
+    override suspend fun getFollowers(uid: String): Flow<Resource<List<UserModel>>> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getFollowings(uid: String): Resource<List<UserModel>> {
+    override suspend fun getFollowings(uid: String): Flow<Resource<List<UserModel>>> {
         TODO("Not yet implemented")
     }
 
