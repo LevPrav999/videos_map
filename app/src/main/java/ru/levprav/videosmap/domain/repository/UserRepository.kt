@@ -17,7 +17,7 @@ interface UserRepository {
 
     suspend fun getMyProfile(): Flow<Resource<UserModel>>
 
-    suspend fun getProfileDetail(targetUid: String): Resource<UserModel>
+    suspend fun getProfileDetail(targetUid: String): Flow<Resource<UserModel>>
 
     suspend fun saveProfile(
         name: String?,
@@ -30,10 +30,10 @@ interface UserRepository {
         likeCount: Int?
     ): Flow<Resource<Unit>>
 
-    suspend fun follow(followedUid: String): Resource<Unit>
+    suspend fun follow(followedUid: String): Flow<Resource<Unit>>
 
-    suspend fun unfollow(followedUid: String): Resource<Unit>
+    suspend fun unfollow(followedUid: String): Flow<Resource<Unit>>
 
-    suspend fun getFollowers(uid: String): Resource<List<UserModel>>
-    suspend fun getFollowings(uid: String): Resource<List<UserModel>>
+    suspend fun getFollowers(uid: String): Flow<Resource<List<UserModel>>>
+    suspend fun getFollowings(uid: String): Flow<Resource<List<UserModel>>>
 }
