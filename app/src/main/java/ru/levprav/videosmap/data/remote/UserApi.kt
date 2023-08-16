@@ -1,6 +1,7 @@
 package ru.levprav.videosmap.data.remote
 
 import android.net.Uri
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FieldValue
@@ -152,6 +153,35 @@ class UserApi @Inject constructor() {
         _firebaseFirestore.collection("users").document(getCurrentUserId()!!).update("following", FieldValue.arrayRemove(targetUid))
     }
 
+    suspend fun getFollowers(uid: String) = withContext(Dispatchers.IO) {
+        suspendCoroutine { continuation ->
+            _firebaseFirestore.collection("users").document(uid).get().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val list = mutableListOf<UserModel>()
+                    val user = task.result.data?.toUserModel()
+                    if (user != null) {
+                        for (userId in user.followers){
+                            val getTask = _firebaseFirestore.collection("users").document(uid).get()
+                            Tasks.await(getTask)
+                            val follower = getTask.result.data?.toUserModel()
+                            if(follower != null){
+                                list.add(follower)
+                            }
+                        }
+                        continuation.resume(list)
+                    }else{
+                        continuation.resumeWithException(
+                            Exception("User data not found")
+                        )
+                    }
+                } else {
+                    continuation.resumeWithException(
+                        task.exception ?: Exception("Error checking user documents")
+                    )
+                }
+            }
+        }
+    }
 
     fun getCurrentUserId(): String? = _firebaseAuth.currentUser?.uid
 
