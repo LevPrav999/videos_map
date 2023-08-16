@@ -71,8 +71,8 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun getMyProfile(): Flow<Resource<UserModel>> = flow<Resource<UserModel>> {
         emit(Resource.Loading())
-        api.firebaseAuth.currentUser?.let {
-            val result = api.getUserDocumentById(it.uid)
+        api.getCurrentUserId()?.let {
+            val result = api.getUserDocumentById(it)
             emit(Resource.Success(result))
         } ?: emit(Resource.Error("User not found"))
     }.flowOn(Dispatchers.IO)
@@ -92,7 +92,7 @@ class UserRepositoryImpl @Inject constructor(
         likeCount: Int?
     ): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading())
-        val id = api.firebaseAuth.currentUser!!.uid
+        val id = api.getCurrentUserId()!!
         if (api.checkUserDocumentExists(id)) {
 
             val oldUser = api.getUserDocumentById(id)
