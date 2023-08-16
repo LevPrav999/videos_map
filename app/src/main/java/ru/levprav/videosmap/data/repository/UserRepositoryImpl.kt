@@ -161,7 +161,13 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getFollowers(uid: String): Flow<Resource<List<UserModel>>>  = flow {
-        TODO("Not yet implemented")
+        emit(Resource.Loading())
+        try{
+            val result = api.getFollowers(uid)
+            emit(Resource.Success(result))
+        }catch (e: Exception){
+            emit(Resource.Error(e.message ?: "Unknown error"))
+        }
     }
 
     override suspend fun getFollowings(uid: String): Flow<Resource<List<UserModel>>>  = flow {
