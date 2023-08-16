@@ -183,6 +183,25 @@ class UserApi @Inject constructor() {
         }
     }
 
+    suspend fun getFollowings(uid: String) = withContext(Dispatchers.IO){
+        suspendCoroutine { continuation ->
+            _firebaseFirestore.collection("users").whereArrayContains("followers", uid).get().addOnCompleteListener{
+                    task ->
+                if(task.isSuccessful){
+                    val list = mutableListOf<UserModel>()
+                    for(doc in task.result.documents){
+                        list.add(doc.data!!.toUserModel())
+                    }
+                    continuation.resume(list)
+                }else{
+                    continuation.resumeWithException(
+                        task.exception ?: Exception("Error checking user documents")
+                    )
+                }
+            }
+        }
+    }
+
     fun getCurrentUserId(): String? = _firebaseAuth.currentUser?.uid
 
 }
