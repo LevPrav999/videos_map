@@ -3,6 +3,7 @@ package ru.levprav.videosmap.data.remote
 import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
@@ -138,6 +139,17 @@ class UserApi @Inject constructor() {
                 }
             }
         }
+    }
+
+
+    suspend fun follow(targetUid: String) = withContext(Dispatchers.IO) {
+        _firebaseFirestore.collection("users").document(targetUid).update("followers", FieldValue.arrayUnion(getCurrentUserId()!!))
+        _firebaseFirestore.collection("users").document(getCurrentUserId()!!).update("following", FieldValue.arrayUnion(targetUid))
+    }
+
+    suspend fun unfollow(targetUid: String) = withContext(Dispatchers.IO) {
+        _firebaseFirestore.collection("users").document(targetUid).update("followers", FieldValue.arrayRemove(getCurrentUserId()!!))
+        _firebaseFirestore.collection("users").document(getCurrentUserId()!!).update("following", FieldValue.arrayRemove(targetUid))
     }
 
 
