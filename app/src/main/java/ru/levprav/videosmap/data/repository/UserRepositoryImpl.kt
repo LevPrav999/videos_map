@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import ru.levprav.videosmap.data.remote.UserApi
 import ru.levprav.videosmap.domain.models.UserModel
+import ru.levprav.videosmap.domain.models.toUserModel
 import ru.levprav.videosmap.domain.repository.UserRepository
 import ru.levprav.videosmap.domain.util.Resource
 import javax.inject.Inject
@@ -175,6 +176,20 @@ class UserRepositoryImpl @Inject constructor(
         try{
             val result = api.getFollowings(uid)
             emit(Resource.Success(result))
+        }catch (e: Exception){
+            emit(Resource.Error(e.message ?: "Unknown error"))
+        }
+    }
+
+    override suspend fun getCurrentUserSnapshots(): Flow<Resource<UserModel>> = flow {
+        emit(Resource.Loading())
+        try{
+            api.getUserSnapshots().collect{
+                snapshot ->
+                if(snapshot.exists() && snapshot.data != null){
+                    emit(Resource.Success(snapshot.data?.toUserModel()))
+                }
+            }
         }catch (e: Exception){
             emit(Resource.Error(e.message ?: "Unknown error"))
         }
