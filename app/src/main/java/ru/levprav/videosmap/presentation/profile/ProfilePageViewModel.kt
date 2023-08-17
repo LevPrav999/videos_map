@@ -21,7 +21,7 @@ class ProfilePageViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            repository.getMyProfile().collect{
+            repository.getCurrentUserSnapshots().collect{
                 result ->
                 state = when(result){
                     is Resource.Loading -> {
