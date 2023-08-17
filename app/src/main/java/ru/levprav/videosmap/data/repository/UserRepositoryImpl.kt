@@ -105,10 +105,12 @@ class UserRepositoryImpl @Inject constructor(
 
             val oldUser = api.getUserDocumentById(id)
 
-            val avatar = if (localUri != null) {
+            val avatar = if (localUri != null && networkUrl == null) {
                 api.saveUserAvatar("profilePictures/$id", localUri)
-            } else {
+            } else if(localUri == null && networkUrl != null) {
                 networkUrl!!
+            }else{
+                "https://366icons.com/media/01/profile-avatar-account-icon-16699.png"
             }
 
             val user = UserModel(
