@@ -4,10 +4,13 @@ import android.net.Uri
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.snapshots
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import ru.levprav.videosmap.domain.models.UserModel
 import ru.levprav.videosmap.domain.models.toMap
@@ -77,6 +80,10 @@ class UserApi @Inject constructor() {
                     }
                 }
         }
+    }
+
+    suspend fun getUserSnapshots(): Flow<DocumentSnapshot> = withContext(Dispatchers.IO) {
+        _firebaseFirestore.collection("users").document(getCurrentUserId()!!).snapshots()
     }
 
     suspend fun saveUserAvatar(storagePath: String, image: Uri): String =
