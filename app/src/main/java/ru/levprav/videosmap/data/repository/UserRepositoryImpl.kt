@@ -70,7 +70,7 @@ class UserRepositoryImpl @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun getMyProfile(): Flow<Resource<UserModel>> = flow<Resource<UserModel>> {
+    override suspend fun getMyProfile(): Flow<Resource<UserModel>> = flow {
         emit(Resource.Loading())
         api.getCurrentUserId()?.let {
             val result = api.getUserDocumentById(it)
@@ -78,7 +78,7 @@ class UserRepositoryImpl @Inject constructor(
         } ?: emit(Resource.Error("User not found"))
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun getProfileDetail(targetUid: String): Flow<Resource<UserModel>> = flow<Resource<UserModel>> {
+    override suspend fun getProfileDetail(targetUid: String): Flow<Resource<UserModel>> = flow {
         emit(Resource.Loading())
         try{
             val result = api.getUserDocumentById(targetUid)
