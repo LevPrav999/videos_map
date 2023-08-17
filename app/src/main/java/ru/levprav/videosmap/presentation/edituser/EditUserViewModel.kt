@@ -74,8 +74,8 @@ class EditUserViewModel @Inject constructor(
         viewModelScope.launch {
             state = state.copy(isLoading = true)
             repository.saveProfile(
-                name = state.data.username!!,
-                description = state.data.description!!,
+                name = state.data.username,
+                description = state.data.description,
                 localUri = state.data.imageUrl,
                 networkUrl = state.data.imageUrlNetwork,
                 null,
