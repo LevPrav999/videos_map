@@ -5,7 +5,6 @@ data class UserModel(
     val name: String, // Name of User
     val description: String, // User Bio
     val imageUrl: String, // User Avatar Url
-    val isFollowing: Boolean, // Is current user following this user
     val followers: List<String>, // List of User's followers
     val following: List<String>, // List of User's following
     val likeCount: Int, // Count of User videos' likes
@@ -17,7 +16,6 @@ fun UserModel.toMap(): Map<String, Any> {
         "name" to name,
         "description" to description,
         "imageUrl" to imageUrl,
-        "isFollowing" to isFollowing,
         "followers" to followers.toList(),
         "following" to following.toList(),
         "likeCount" to likeCount
@@ -30,7 +28,6 @@ fun Map<String, Any>.toUserModel(): UserModel {
         name = this["name"].toString(),
         description = this["description"].toString(),
         imageUrl = this["imageUrl"].toString(),
-        isFollowing = this["isFollowing"].toString().toBoolean(),
         followers = (this["followers"] as List<*>).map { it as String },
         following = (this["following"] as List<*>).map { it as String },
         likeCount = this["likeCount"].toString().toInt()
