@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import ru.levprav.videosmap.navigation.PreviewNavigation
+import ru.levprav.videosmap.navigation.TabsDirections
 import ru.levprav.videosmap.presentation.main.BottomNavItem
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -28,49 +30,51 @@ fun BottomNavigationBar(
     onItemClick: (BottomNavItem) -> Unit
 ) {
     val backStackEntry = navController.currentBackStackEntryAsState()
-    NavigationBar(
-        modifier = modifier,
-        containerColor = Color.White,
-        tonalElevation = 5.dp
-    ) {
-        items.forEach { item ->
-            val selected = item.route == backStackEntry.value?.destination?.route
-            NavigationBarItem(
-                selected = selected,
-                onClick = { onItemClick(item) },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedTextColor = Color.Green,
-                    unselectedTextColor = Color.Gray
-                ),
-                icon = {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        if (item.badgeCount > 0) {
-                            BadgedBox(
-                                badge = {
-                                    Text(text = item.badgeCount.toString())
+    if(backStackEntry.value?.destination?.route != null && !PreviewNavigation.route.contains(backStackEntry.value?.destination?.route!!.split("/").first())){
+        NavigationBar(
+            modifier = modifier,
+            containerColor = Color.White,
+            tonalElevation = 5.dp
+        ) {
+            items.forEach { item ->
+                val selected = item.route == backStackEntry.value?.destination?.route
+                NavigationBarItem(
+                    selected = selected,
+                    onClick = { onItemClick(item) },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedTextColor = Color.Green,
+                        unselectedTextColor = Color.Gray
+                    ),
+                    icon = {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            if (item.badgeCount > 0) {
+                                BadgedBox(
+                                    badge = {
+                                        Text(text = item.badgeCount.toString())
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = item.icon,
+                                        contentDescription = item.name
+                                    )
                                 }
-                            ) {
+                            } else {
                                 Icon(
                                     imageVector = item.icon,
                                     contentDescription = item.name
                                 )
                             }
-                        } else {
-                            Icon(
-                                imageVector = item.icon,
-                                contentDescription = item.name
-                            )
-                        }
-                        if (selected) {
-                            Text(
-                                text = item.name,
-                                textAlign = TextAlign.Center,
-                                fontSize = 10.sp
-                            )
+                            if (selected) {
+                                Text(
+                                    text = item.name,
+                                    textAlign = TextAlign.Center,
+                                    fontSize = 10.sp
+                                )
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
         }
     }
 }
