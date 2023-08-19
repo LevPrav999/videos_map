@@ -108,7 +108,7 @@ class UserRepositoryImpl @Inject constructor(
             val avatar = if (localUri != null && networkUrl == null) {
                 api.saveUserAvatar("profilePictures/$id", localUri)
             } else if(localUri == null && networkUrl != null) {
-                networkUrl!!
+                networkUrl
             }else{
                 "https://366icons.com/media/01/profile-avatar-account-icon-16699.png"
             }
@@ -118,7 +118,6 @@ class UserRepositoryImpl @Inject constructor(
                 name = name ?: oldUser.name,
                 description = description ?: oldUser.description,
                 imageUrl = avatar,
-                isFollowing = isFollowing ?: oldUser.isFollowing,
                 followers = followers ?: oldUser.followers,
                 following = following ?: oldUser.following,
                 likeCount = likeCount ?: oldUser.likeCount,
@@ -133,7 +132,6 @@ class UserRepositoryImpl @Inject constructor(
                 name = name!!,
                 description = description!!,
                 imageUrl = avatar,
-                isFollowing = false,
                 followers = listOf(),
                 following = listOf(),
                 likeCount = 0,
