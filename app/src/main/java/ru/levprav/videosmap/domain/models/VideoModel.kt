@@ -11,9 +11,49 @@ data class VideoModel(
     val createdAt: Date, // Timestamp of when the video was posted
     val description: String, // Text description of the video. Used to perform keyword search as well
     val userId: String, // ID of the user who have posted the video
-    val isFollowing: Boolean, // Whether the logged in user is following the creator of this video
     val position: LatLng, // Coordinates of the position of the video
     val likeCount: Int, // Video likes count
     val commentCount: Int, // Video comments count
-    val haveLiked: Boolean, // Whether the logged in user liked video
+    val liked: List<String>, // Whether the logged in user liked video
 )
+fun VideoModel.toMap(): Map<String, Any?> {
+    return mapOf(
+        "id" to id,
+        "url" to url,
+        "imageUrl" to imageUrl,
+        "thumbnailUrl" to thumbnailUrl,
+        "createdAt" to createdAt,
+        "description" to description,
+        "userId" to userId,
+        "position" to mapOf(
+            "latitude" to position.latitude,
+            "longitude" to position.longitude
+        ),
+        "likeCount" to likeCount,
+        "commentCount" to commentCount,
+        "liked" to liked
+    )
+}
+
+fun Map<String, Any?>.toVideoModel(): VideoModel {
+    val positionMap = this["position"] as? Map<*, *>
+    val position = positionMap?.let {
+        val latitude = it["latitude"] as? Double ?: 0.0
+        val longitude = it["longitude"] as? Double ?: 0.0
+        LatLng(latitude, longitude)
+    } ?: LatLng(0.0, 0.0)
+
+    return VideoModel(
+        id = this["id"] as? String ?: "",
+        url = this["url"] as? String ?: "",
+        imageUrl = this["imageUrl"] as? String ?: "",
+        thumbnailUrl = this["thumbnailUrl"] as? String ?: "",
+        createdAt = this["createdAt"] as? Date ?: Date(),
+        description = this["description"] as? String ?: "",
+        userId = this["userId"] as? String ?: "",
+        position = position,
+        likeCount = this["likeCount"] as? Int ?: 0,
+        commentCount = this["commentCount"] as? Int ?: 0,
+        liked = (this["liked"] as List<*>).map { it as String }
+    )
+}
