@@ -80,10 +80,10 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun getProfileDetail(targetUid: String): Flow<Resource<UserModel>> = flow {
         emit(Resource.Loading())
-        try{
+        try {
             val result = api.getUserDocumentById(targetUid)
             emit(Resource.Success(result))
-        }catch (e: Exception){
+        } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Unknown error"))
         }
 
@@ -107,9 +107,9 @@ class UserRepositoryImpl @Inject constructor(
 
             val avatar = if (localUri != null && networkUrl == null) {
                 api.saveUserAvatar("profilePictures/$id", localUri)
-            } else if(localUri == null && networkUrl != null) {
+            } else if (localUri == null && networkUrl != null) {
                 networkUrl
-            }else{
+            } else {
                 "https://366icons.com/media/01/profile-avatar-account-icon-16699.png"
             }
 
@@ -141,56 +141,55 @@ class UserRepositoryImpl @Inject constructor(
         emit(Resource.Success(Unit))
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun follow(followedUid: String): Flow<Resource<Unit>>  = flow {
+    override suspend fun follow(followedUid: String): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading())
-        try{
+        try {
             api.follow(followedUid)
             emit(Resource.Success(Unit))
-        }catch (e: Exception){
+        } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Unknown error"))
         }
     }
 
-    override suspend fun unfollow(followedUid: String): Flow<Resource<Unit>>  = flow {
+    override suspend fun unfollow(followedUid: String): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading())
-        try{
+        try {
             api.unfollow(followedUid)
             emit(Resource.Success(Unit))
-        }catch (e: Exception){
+        } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Unknown error"))
         }
     }
 
-    override suspend fun getFollowers(uid: String): Flow<Resource<List<UserModel>>>  = flow {
+    override suspend fun getFollowers(uid: String): Flow<Resource<List<UserModel>>> = flow {
         emit(Resource.Loading())
-        try{
+        try {
             val result = api.getFollowers(uid)
             emit(Resource.Success(result))
-        }catch (e: Exception){
+        } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Unknown error"))
         }
     }
 
-    override suspend fun getFollowings(uid: String): Flow<Resource<List<UserModel>>>  = flow {
+    override suspend fun getFollowings(uid: String): Flow<Resource<List<UserModel>>> = flow {
         emit(Resource.Loading())
-        try{
+        try {
             val result = api.getFollowings(uid)
             emit(Resource.Success(result))
-        }catch (e: Exception){
+        } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Unknown error"))
         }
     }
 
     override suspend fun getCurrentUserSnapshots(): Flow<Resource<UserModel>> = flow {
         emit(Resource.Loading())
-        try{
-            api.getUserSnapshots().collect{
-                snapshot ->
-                if(snapshot.exists() && snapshot.data != null){
+        try {
+            api.getUserSnapshots().collect { snapshot ->
+                if (snapshot.exists() && snapshot.data != null) {
                     emit(Resource.Success(snapshot.data?.toUserModel()))
                 }
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Unknown error"))
         }
     }

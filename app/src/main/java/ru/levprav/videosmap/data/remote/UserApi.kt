@@ -151,61 +151,67 @@ class UserApi @Inject constructor() {
 
 
     suspend fun follow(targetUid: String) = withContext(Dispatchers.IO) {
-        _firebaseFirestore.collection("users").document(targetUid).update("followers", FieldValue.arrayUnion(getCurrentUserId()!!))
-        _firebaseFirestore.collection("users").document(getCurrentUserId()!!).update("following", FieldValue.arrayUnion(targetUid))
+        _firebaseFirestore.collection("users").document(targetUid)
+            .update("followers", FieldValue.arrayUnion(getCurrentUserId()!!))
+        _firebaseFirestore.collection("users").document(getCurrentUserId()!!)
+            .update("following", FieldValue.arrayUnion(targetUid))
     }
 
     suspend fun unfollow(targetUid: String) = withContext(Dispatchers.IO) {
-        _firebaseFirestore.collection("users").document(targetUid).update("followers", FieldValue.arrayRemove(getCurrentUserId()!!))
-        _firebaseFirestore.collection("users").document(getCurrentUserId()!!).update("following", FieldValue.arrayRemove(targetUid))
+        _firebaseFirestore.collection("users").document(targetUid)
+            .update("followers", FieldValue.arrayRemove(getCurrentUserId()!!))
+        _firebaseFirestore.collection("users").document(getCurrentUserId()!!)
+            .update("following", FieldValue.arrayRemove(targetUid))
     }
 
     suspend fun getFollowers(uid: String) = withContext(Dispatchers.IO) {
         suspendCoroutine { continuation ->
-            _firebaseFirestore.collection("users").document(uid).get().addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val list = mutableListOf<UserModel>()
-                    val user = task.result.data?.toUserModel()
-                    if (user != null) {
-                        for (userId in user.followers){
-                            val getTask = _firebaseFirestore.collection("users").document(uid).get()
-                            Tasks.await(getTask)
-                            val follower = getTask.result.data?.toUserModel()
-                            if(follower != null){
-                                list.add(follower)
+            _firebaseFirestore.collection("users").document(uid).get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val list = mutableListOf<UserModel>()
+                        val user = task.result.data?.toUserModel()
+                        if (user != null) {
+                            for (userId in user.followers) {
+                                val getTask =
+                                    _firebaseFirestore.collection("users").document(uid).get()
+                                Tasks.await(getTask)
+                                val follower = getTask.result.data?.toUserModel()
+                                if (follower != null) {
+                                    list.add(follower)
+                                }
                             }
+                            continuation.resume(list)
+                        } else {
+                            continuation.resumeWithException(
+                                Exception("User data not found")
+                            )
                         }
-                        continuation.resume(list)
-                    }else{
+                    } else {
                         continuation.resumeWithException(
-                            Exception("User data not found")
+                            task.exception ?: Exception("Error checking user documents")
                         )
                     }
-                } else {
-                    continuation.resumeWithException(
-                        task.exception ?: Exception("Error checking user documents")
-                    )
                 }
-            }
         }
     }
 
-    suspend fun getFollowings(uid: String) = withContext(Dispatchers.IO){
+    suspend fun getFollowings(uid: String) = withContext(Dispatchers.IO) {
         suspendCoroutine { continuation ->
-            _firebaseFirestore.collection("users").whereArrayContains("followers", uid).get().addOnCompleteListener{
-                    task ->
-                if(task.isSuccessful){
-                    val list = mutableListOf<UserModel>()
-                    for(doc in task.result.documents){
-                        list.add(doc.data!!.toUserModel())
+            _firebaseFirestore.collection("users").whereArrayContains("followers", uid).get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val list = mutableListOf<UserModel>()
+                        for (doc in task.result.documents) {
+                            list.add(doc.data!!.toUserModel())
+                        }
+                        continuation.resume(list)
+                    } else {
+                        continuation.resumeWithException(
+                            task.exception ?: Exception("Error checking user documents")
+                        )
                     }
-                    continuation.resume(list)
-                }else{
-                    continuation.resumeWithException(
-                        task.exception ?: Exception("Error checking user documents")
-                    )
                 }
-            }
         }
     }
 

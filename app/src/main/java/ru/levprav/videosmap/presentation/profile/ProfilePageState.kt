@@ -1,12 +1,10 @@
 package ru.levprav.videosmap.presentation.profile
 
-import android.net.Uri
-
 data class ProfilePageState(
     val data: UserInfo = UserInfo(null, null, null),
     val isLoading: Boolean = false,
     val error: String? = null,
-    )
+)
 
 
 data class UserInfo(

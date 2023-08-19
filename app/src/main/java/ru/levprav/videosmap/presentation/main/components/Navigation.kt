@@ -5,14 +5,10 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
-import ru.levprav.videosmap.navigation.NavigationManager
 import ru.levprav.videosmap.navigation.TabsDirections
 import ru.levprav.videosmap.presentation.camera.VideoCaptureScreen
-import ru.levprav.videosmap.presentation.camera.VideoPreviewScreen
 import ru.levprav.videosmap.presentation.main.EmptyScreen
 import ru.levprav.videosmap.presentation.profile.ProfilePage
 

@@ -30,11 +30,14 @@ fun ProfilePage(viewModel: ProfilePageViewModel) {
     ) {
         item {
             // AsyncImage
-            AsyncImage(model = viewModel.state.data.imageUrl, contentDescription = null, modifier = Modifier
-                .size(100.dp)
-                .aspectRatio(1f)
-                .clip(CircleShape)
-                .border(2.dp, Color.Gray)
+            AsyncImage(
+                model = viewModel.state.data.imageUrl,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(100.dp)
+                    .aspectRatio(1f)
+                    .clip(CircleShape)
+                    .border(2.dp, Color.Gray)
             )
         }
 

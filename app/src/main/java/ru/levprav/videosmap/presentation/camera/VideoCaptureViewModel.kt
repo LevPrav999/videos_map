@@ -10,7 +10,7 @@ import javax.inject.Inject
 class VideoCaptureScreenViewModel @Inject constructor(
     private val navigationManager: NavigationManager
 ) : ViewModel() {
-    fun navigate(uri: String){
+    fun navigate(uri: String) {
         navigationManager.navigate(PreviewNavigation.previewScreen(uri))
     }
 }

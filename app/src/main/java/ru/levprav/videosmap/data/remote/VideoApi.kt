@@ -1,8 +1,6 @@
 package ru.levprav.videosmap.data.remote
 
-import android.graphics.Bitmap
 import android.net.Uri
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers

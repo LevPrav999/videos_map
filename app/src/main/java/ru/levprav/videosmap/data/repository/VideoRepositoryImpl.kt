@@ -4,14 +4,10 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import ru.levprav.videosmap.data.location.DefaultLocationTracker
 import ru.levprav.videosmap.data.remote.UserApi
 import ru.levprav.videosmap.data.remote.VideoApi
@@ -20,8 +16,6 @@ import ru.levprav.videosmap.domain.repository.VideoRepository
 import ru.levprav.videosmap.domain.util.Resource
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileOutputStream
-import java.util.Date
 import javax.inject.Inject
 
 class VideoRepositoryImpl @Inject constructor(
@@ -44,21 +38,21 @@ class VideoRepositoryImpl @Inject constructor(
     override suspend fun saveVideo(context: Context, uri: Uri): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading())
         val location = locationTracker.getCurrentLocation()
-        if(location == null){
+        if (location == null) {
             emit(Resource.Error("Location not found"))
-        }else{
+        } else {
             val time = System.currentTimeMillis()
-                val videoPath = userApi.getCurrentUserId() + "/${time}.${
-                    uri.path?.split(".")?.last()
-                }"
+            val videoPath = userApi.getCurrentUserId() + "/${time}.${
+                uri.path?.split(".")?.last()
+            }"
             val imagePath = userApi.getCurrentUserId() + "/image-${time}.${
                 uri.path?.split(".")?.last()
             }"
-            try{
+            try {
                 videoApi.saveFileToStorage(videoPath, uri)
                 videoApi.saveBytesToStorage(imagePath, createVideoThumbnail(context, uri)!!)
                 emit(Resource.Success(Unit))
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 emit(Resource.Error(e.message ?: "Error saving video"))
             }
         }

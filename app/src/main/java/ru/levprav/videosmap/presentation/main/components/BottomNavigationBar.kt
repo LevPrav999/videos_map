@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import ru.levprav.videosmap.navigation.PreviewNavigation
-import ru.levprav.videosmap.navigation.TabsDirections
 import ru.levprav.videosmap.presentation.main.BottomNavItem
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,7 +29,10 @@ fun BottomNavigationBar(
     onItemClick: (BottomNavItem) -> Unit
 ) {
     val backStackEntry = navController.currentBackStackEntryAsState()
-    if(backStackEntry.value?.destination?.route != null && !PreviewNavigation.route.contains(backStackEntry.value?.destination?.route!!.split("/").first())){
+    if (backStackEntry.value?.destination?.route != null && !PreviewNavigation.route.contains(
+            backStackEntry.value?.destination?.route!!.split("/").first()
+        )
+    ) {
         NavigationBar(
             modifier = modifier,
             containerColor = Color.White,

@@ -1,8 +1,6 @@
 package ru.levprav.videosmap.navigation
 
 import androidx.navigation.NamedNavArgument
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
 
 object TabsDirections {
     val map = object : NavigationCommand {

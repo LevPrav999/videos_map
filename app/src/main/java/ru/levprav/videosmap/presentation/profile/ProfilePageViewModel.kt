@@ -9,7 +9,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ru.levprav.videosmap.domain.repository.UserRepository
 import ru.levprav.videosmap.domain.util.Resource
-import ru.levprav.videosmap.navigation.NavigationManager
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,15 +20,16 @@ class ProfilePageViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            repository.getCurrentUserSnapshots().collect{
-                result ->
-                state = when(result){
+            repository.getCurrentUserSnapshots().collect { result ->
+                state = when (result) {
                     is Resource.Loading -> {
                         state.copy(isLoading = true)
                     }
+
                     is Resource.Error -> {
                         state.copy(isLoading = false, error = result.message)
                     }
+
                     is Resource.Success -> {
                         val data = state.data.copy(
                             username = result.data?.name,

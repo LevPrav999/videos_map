@@ -16,6 +16,7 @@ data class VideoModel(
     val commentCount: Int, // Video comments count
     val liked: List<String>, // Whether the logged in user liked video
 )
+
 fun VideoModel.toMap(): Map<String, Any?> {
     return mapOf(
         "id" to id,
