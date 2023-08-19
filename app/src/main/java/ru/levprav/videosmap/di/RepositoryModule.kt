@@ -7,7 +7,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.levprav.videosmap.data.repository.UserRepositoryImpl
+import ru.levprav.videosmap.data.repository.VideoRepositoryImpl
 import ru.levprav.videosmap.domain.repository.UserRepository
+import ru.levprav.videosmap.domain.repository.VideoRepository
 import javax.inject.Singleton
 
 @ExperimentalCoroutinesApi
@@ -20,4 +22,10 @@ abstract class RepositoryModule {
     abstract fun bindUserRepository(
         userRepositoryImpl: UserRepositoryImpl
     ): UserRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindVideoRepository(
+        videoRepositoryImpl: VideoRepositoryImpl
+    ): VideoRepository
 }
