@@ -119,11 +119,7 @@ fun VideoCaptureScreen(viewModel: VideoCaptureScreenViewModel) {
                             if (event is VideoRecordEvent.Finalize) {
                                 val uri = event.outputResults.outputUri
                                 if (uri != Uri.EMPTY) {
-                                    val uriEncoded = URLEncoder.encode(
-                                        uri.toString(),
-                                        StandardCharsets.UTF_8.toString()
-                                    )
-                                    viewModel.navigate(uriEncoded)
+                                    viewModel.navigate(uri.toString())
                                 }
                             }
                         }
