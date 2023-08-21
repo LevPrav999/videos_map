@@ -11,10 +11,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import ru.levprav.videosmap.navigation.DetailsNavigation
 import ru.levprav.videosmap.navigation.NavigationDirections
 import ru.levprav.videosmap.navigation.NavigationManager
 import ru.levprav.videosmap.navigation.PreviewNavigation
 import ru.levprav.videosmap.presentation.auth.AuthPage
+import ru.levprav.videosmap.presentation.camera.VideoDetailsScreen
 import ru.levprav.videosmap.presentation.camera.VideoPreviewScreen
 import ru.levprav.videosmap.presentation.edituser.EditUserPage
 import ru.levprav.videosmap.presentation.main.TabsPage
@@ -64,7 +66,14 @@ class MainActivity : ComponentActivity() {
                 { backStackEntry ->
 
                     backStackEntry.arguments?.getString(PreviewNavigation.KEY_URI)
-                        ?.let { VideoPreviewScreen(it) }
+                        ?.let { VideoPreviewScreen(it, hiltViewModel()) }
+                }
+
+                composable(DetailsNavigation.route, arguments = DetailsNavigation.arguments)
+                { backStackEntry ->
+
+                    backStackEntry.arguments?.getString(DetailsNavigation.KEY_URI)
+                        ?.let { VideoDetailsScreen(it) }
                 }
             }
         }
