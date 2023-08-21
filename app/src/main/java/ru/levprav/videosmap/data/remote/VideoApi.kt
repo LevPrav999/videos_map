@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.levprav.videosmap.domain.models.VideoModel
 import ru.levprav.videosmap.domain.models.toMap
+import java.io.File
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -21,12 +22,13 @@ class VideoApi @Inject constructor() {
         _firebaseFirestore.collection("videos").document(video.id).set(video.toMap())
     }
 
-    suspend fun saveFileToStorage(storagePath: String, fileUri: Uri): String =
+    suspend fun saveFileToStorage(storagePath: String, fileUri: String): String =
         withContext(Dispatchers.IO) {
             val storageReference = _firebaseStorage.reference
 
             val imageRef = storageReference.child(storagePath)
-            val uploadTask = imageRef.putFile(fileUri)
+            val file = File(fileUri)
+            val uploadTask = imageRef.putFile(Uri.fromFile(file))
 
             suspendCoroutine { continuation ->
                 uploadTask.addOnCompleteListener { task ->
