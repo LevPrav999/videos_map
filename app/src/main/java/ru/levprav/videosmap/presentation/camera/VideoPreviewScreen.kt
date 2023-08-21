@@ -51,5 +51,17 @@ fun VideoPreviewScreen(
             },
             modifier = Modifier.fillMaxSize()
         )
+        IconButton(onClick = {
+            // navigate to VideoDetails page
+        }, modifier = Modifier
+            .align(Alignment.TopEnd)
+            .padding(bottom = 32.dp)) {
+            Icon(
+                painter = painterResource(R.drawable.ic_next_arrow),
+                contentDescription = "",
+                modifier = Modifier.size(64.dp),
+                tint = Color.White
+            )
+        }
     }
 }
