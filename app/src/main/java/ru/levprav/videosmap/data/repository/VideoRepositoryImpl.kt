@@ -35,7 +35,7 @@ class VideoRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override suspend fun saveVideo(context: Context, uri: String): Flow<Resource<Unit>> = flow {
+    override suspend fun saveVideo(uri: String, byteArray: ByteArray): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading())
         val location = locationTracker.getCurrentLocation()
         if (location == null) {
@@ -50,7 +50,7 @@ class VideoRepositoryImpl @Inject constructor(
             }"
             try {
                 videoApi.saveFileToStorage(videoPath, uri)
-                videoApi.saveBytesToStorage(imagePath, createVideoThumbnail(uri)!!)
+                videoApi.saveBytesToStorage(imagePath, byteArray)
                 emit(Resource.Success(Unit))
             } catch (e: Exception) {
                 emit(Resource.Error(e.message ?: "Error saving video"))
@@ -88,22 +88,6 @@ class VideoRepositoryImpl @Inject constructor(
 
     override suspend fun getNewVideos(): Resource<List<VideoModel>> {
         TODO("Not yet implemented")
-    }
-
-    fun createVideoThumbnail(videoUri: String): ByteArray? {
-        val retriever = MediaMetadataRetriever()
-        try {
-            retriever.setDataSource(videoUri)
-            val thumbnailBitmap = retriever.frameAtTime
-            val outputStream = ByteArrayOutputStream()
-            thumbnailBitmap?.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-            return outputStream.toByteArray()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            retriever.release()
-        }
-        return null
     }
 
 }
