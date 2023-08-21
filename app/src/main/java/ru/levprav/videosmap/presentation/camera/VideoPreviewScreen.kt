@@ -23,7 +23,8 @@ import ru.levprav.videosmap.R
 
 @Composable
 fun VideoPreviewScreen(
-    uri: String
+    uri: String,
+    viewModel: VideoPreviewViewModel
 ) {
     val context = LocalContext.current
 
@@ -52,7 +53,7 @@ fun VideoPreviewScreen(
             modifier = Modifier.fillMaxSize()
         )
         IconButton(onClick = {
-            // navigate to VideoDetails page
+            viewModel.navigate(uri.trim('{', '}'))
         }, modifier = Modifier
             .align(Alignment.TopEnd)
             .padding(bottom = 32.dp)) {
