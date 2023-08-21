@@ -7,8 +7,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import ru.levprav.videosmap.navigation.DetailsNavigation
 import ru.levprav.videosmap.navigation.TabsDirections
 import ru.levprav.videosmap.presentation.camera.VideoCaptureScreen
+import ru.levprav.videosmap.presentation.camera.VideoDetailsScreen
 import ru.levprav.videosmap.presentation.main.EmptyScreen
 import ru.levprav.videosmap.presentation.profile.ProfilePage
 
