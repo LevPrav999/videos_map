@@ -18,6 +18,7 @@ import androidx.camera.video.Recording
 import androidx.camera.video.VideoCapture
 import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -31,6 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -132,13 +134,14 @@ fun VideoCaptureScreen(viewModel: VideoCaptureScreenViewModel) {
                 }
             },
             modifier = Modifier
-                .align(Alignment.Center)
+                .align(Alignment.TopCenter)
                 .padding(bottom = 32.dp)
         ) {
             Icon(
                 painter = painterResource(if (recordingStarted.value) R.drawable.ic_stop else R.drawable.ic_record),
                 contentDescription = "",
-                modifier = Modifier.size(64.dp)
+                modifier = Modifier.size(64.dp),
+                tint = Color.White
             )
         }
         if (!recordingStarted.value) {
@@ -147,13 +150,14 @@ fun VideoCaptureScreen(viewModel: VideoCaptureScreenViewModel) {
                     audioEnabled.value = !audioEnabled.value
                 },
                 modifier = Modifier
-                    .align(Alignment.CenterStart)
+                    .align(Alignment.TopStart)
                     .padding(bottom = 32.dp)
             ) {
                 Icon(
                     painter = painterResource(if (audioEnabled.value) R.drawable.ic_mic_on else R.drawable.ic_mic_off),
                     contentDescription = "",
-                    modifier = Modifier.size(64.dp)
+                    modifier = Modifier.size(64.dp),
+                    tint = Color.White
                 )
             }
         }
@@ -173,13 +177,14 @@ fun VideoCaptureScreen(viewModel: VideoCaptureScreenViewModel) {
                     }
                 },
                 modifier = Modifier
-                    .align(Alignment.CenterEnd)
+                    .align(Alignment.TopEnd)
                     .padding(bottom = 32.dp)
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_cameraswitch),
                     contentDescription = "",
-                    modifier = Modifier.size(64.dp)
+                    modifier = Modifier.size(64.dp),
+                    tint = Color.White
                 )
             }
         }
