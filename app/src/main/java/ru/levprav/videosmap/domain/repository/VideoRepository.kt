@@ -16,7 +16,7 @@ interface VideoRepository {
 
     suspend fun getVideosFromUid(uid: String): Resource<List<VideoModel>>
 
-    suspend fun saveVideo(context: Context, uri: String): Flow<Resource<Unit>>
+    suspend fun saveVideo(uri: String, byteArray: ByteArray): Flow<Resource<Unit>>
     suspend fun like(video: VideoModel): Resource<String>
     suspend fun unlike(video: VideoModel): Resource<String>
     suspend fun deleteVideo(videoId: String): Resource<String>
