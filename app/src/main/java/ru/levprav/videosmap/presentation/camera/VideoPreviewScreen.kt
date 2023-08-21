@@ -30,7 +30,7 @@ fun VideoPreviewScreen(
 
     val exoPlayer = remember(context) {
         ExoPlayer.Builder(context).build().apply {
-            setMediaItem(MediaItem.fromUri(uri.trim('{', '}')))
+            setMediaItem(MediaItem.fromUri(uri))
             prepare()
         }
     }
@@ -53,7 +53,7 @@ fun VideoPreviewScreen(
             modifier = Modifier.fillMaxSize()
         )
         IconButton(onClick = {
-            viewModel.navigate(uri.trim('{', '}'))
+            viewModel.navigate(uri)
         }, modifier = Modifier
             .align(Alignment.TopEnd)
             .padding(bottom = 32.dp)) {

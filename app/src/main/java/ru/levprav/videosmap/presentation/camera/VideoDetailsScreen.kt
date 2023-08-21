@@ -29,10 +29,10 @@ fun VideoDetailsScreen(
     uri: String,
 ) {
     var description by remember { mutableStateOf("") }
-    var thumbnailBitmap by remember { mutableStateOf<ByteArray?>(null) }
+    var thumbnailBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
     LaunchedEffect(Unit){
-        thumbnailBitmap = createVideoThumbnail(uri.trim('{', '}'))
+        thumbnailBitmap = createVideoThumbnail(uri)?.let { BitmapFactory.decodeByteArray(createVideoThumbnail(uri), 0, it.size) }
     }
 
 
@@ -41,7 +41,7 @@ fun VideoDetailsScreen(
     ) {
         thumbnailBitmap?.let { thumbnail ->
             Image(
-                bitmap = BitmapFactory.decodeByteArray(thumbnail, 0, thumbnail.size).asImageBitmap(),
+                bitmap = thumbnail.asImageBitmap(),
                 contentDescription = "Video Thumbnail",
                 modifier = Modifier
                     .fillMaxWidth()
