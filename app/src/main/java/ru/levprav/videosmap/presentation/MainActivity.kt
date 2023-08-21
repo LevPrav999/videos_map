@@ -73,7 +73,7 @@ class MainActivity : ComponentActivity() {
                 { backStackEntry ->
 
                     backStackEntry.arguments?.getString(DetailsNavigation.KEY_URI)
-                        ?.let { VideoDetailsScreen(it) }
+                        ?.let { VideoDetailsScreen(it, hiltViewModel()) }
                 }
             }
         }
