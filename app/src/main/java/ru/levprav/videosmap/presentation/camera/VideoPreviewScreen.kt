@@ -20,7 +20,7 @@ fun VideoPreviewScreen(
 
     val exoPlayer = remember(context) {
         ExoPlayer.Builder(context).build().apply {
-            setMediaItem(MediaItem.fromUri(uri.replace("{", "").replace("}", "")))
+            setMediaItem(MediaItem.fromUri(uri.trim('{', '}')))
             prepare()
         }
     }
