@@ -16,7 +16,7 @@ object PreviewNavigation {
     ) = object : NavigationCommand {
 
 
-        override val destination = "preview/{$uri}"
+        override val destination = "preview/$uri"
         override val arguments = listOf(
             navArgument(KEY_URI) { type = NavType.StringType }
         )
