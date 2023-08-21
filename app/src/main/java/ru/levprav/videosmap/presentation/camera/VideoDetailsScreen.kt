@@ -27,6 +27,7 @@ import java.io.ByteArrayOutputStream
 @Composable
 fun VideoDetailsScreen(
     uri: String,
+    viewModel: VideoDetailsViewModel
 ) {
     var description by remember { mutableStateOf("") }
     var thumbnailBitmap by remember { mutableStateOf<Bitmap?>(null) }
@@ -61,7 +62,7 @@ fun VideoDetailsScreen(
 
         Button(
             onClick = {
-                // ...
+                viewModel.saveVideo(uri, createVideoThumbnail(uri)!!)
             },
             modifier = Modifier
                 .fillMaxWidth()
