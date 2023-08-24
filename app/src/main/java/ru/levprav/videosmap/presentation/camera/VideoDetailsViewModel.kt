@@ -23,9 +23,9 @@ class VideoDetailsViewModel @Inject constructor(
     var state by mutableStateOf(VideoDetailsState())
         private set
 
-    fun saveVideo(uri: String, bytes: ByteArray) {
+    fun saveVideo(uri: String, bytes: ByteArray, description: String) {
         viewModelScope.launch {
-            repository.saveVideo(uri, bytes).collect{
+            repository.saveVideo(uri, bytes, description).collect{
                 result ->
                 state = when(result){
                     is Resource.Loading -> {
