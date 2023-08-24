@@ -16,6 +16,7 @@ import ru.levprav.videosmap.domain.repository.VideoRepository
 import ru.levprav.videosmap.domain.util.Resource
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.util.Date
 import javax.inject.Inject
 
 class VideoRepositoryImpl @Inject constructor(
@@ -35,7 +36,7 @@ class VideoRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override suspend fun saveVideo(uri: String, byteArray: ByteArray): Flow<Resource<Unit>> = flow {
+    override suspend fun saveVideo(uri: String, byteArray: ByteArray, description: String): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading())
         val location = locationTracker.getCurrentLocation()
         if (location == null) {
@@ -48,9 +49,28 @@ class VideoRepositoryImpl @Inject constructor(
             val imagePath = userApi.getCurrentUserId() + "/image-${time}.${
                 uri.split(".").last()
             }"
+            val created = uri.split("/").last().replace(".mp4", "")
+
             try {
-                videoApi.saveFileToStorage(videoPath, uri)
-                videoApi.saveBytesToStorage(imagePath, byteArray)
+                val videoUrl = videoApi.saveFileToStorage(videoPath, uri)
+                val thumbnailUrl = videoApi.saveBytesToStorage(imagePath, byteArray)
+
+                val video = VideoModel(
+                    id = time.toString(),
+                    url = videoUrl,
+                    thumbnailUrl = thumbnailUrl,
+                    imageUrl = thumbnailUrl,
+                    createdAt = Date(),
+                    description = description,
+                    userId = userApi.getCurrentUserId()!!,
+                    position = location,
+                    likeCount = 0,
+                    commentCount = 0,
+                    liked = listOf()
+                )
+
+                videoApi.saveVideoToFirestore(video)
+
                 emit(Resource.Success(Unit))
             } catch (e: Exception) {
                 emit(Resource.Error(e.message ?: "Error saving video"))
