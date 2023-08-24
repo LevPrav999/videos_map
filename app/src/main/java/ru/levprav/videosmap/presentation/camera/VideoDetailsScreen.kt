@@ -1,8 +1,14 @@
 package ru.levprav.videosmap.presentation.camera
 
+import android.content.ContentResolver
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
+import android.net.Uri
+import android.os.Build
+import android.util.Size
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,20 +26,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import java.io.ByteArrayOutputStream
+import java.io.File
 
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun VideoDetailsScreen(
     uri: String,
     viewModel: VideoDetailsViewModel
 ) {
+
     var description by remember { mutableStateOf("") }
     var thumbnailBitmap by remember { mutableStateOf<Bitmap?>(null) }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit){
-        thumbnailBitmap = createVideoThumbnail(uri)?.let { BitmapFactory.decodeByteArray(createVideoThumbnail(uri), 0, it.size) }
+        thumbnailBitmap = createVideoThumbnail(context, uri)?.let { BitmapFactory.decodeByteArray(createVideoThumbnail(context, uri), 0, it.size) }
     }
 
 
@@ -62,7 +75,7 @@ fun VideoDetailsScreen(
 
         Button(
             onClick = {
-                viewModel.saveVideo(uri, createVideoThumbnail(uri)!!)
+                viewModel.saveVideo(uri, createVideoThumbnail(context, uri)!!)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -73,18 +86,25 @@ fun VideoDetailsScreen(
     }
 }
 
-fun createVideoThumbnail(videoUri: String): ByteArray? {
+@RequiresApi(Build.VERSION_CODES.Q)
+fun createVideoThumbnail(context: Context, videoUri: String): ByteArray? {
     val retriever = MediaMetadataRetriever()
+
+    val file = Uri.parse(videoUri)
+
     try {
-        retriever.setDataSource(videoUri)
-        val thumbnailBitmap = retriever.frameAtTime
-        val outputStream = ByteArrayOutputStream()
-        thumbnailBitmap?.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-        return outputStream.toByteArray()
+        retriever.setDataSource(context, file)
+
+        val thumbnailBitmap = retriever.getFrameAtTime()
+        val stream = ByteArrayOutputStream()
+        thumbnailBitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
+
+        return stream.toByteArray()
     } catch (e: Exception) {
         e.printStackTrace()
     } finally {
         retriever.release()
     }
+
     return null
 }
