@@ -27,8 +27,8 @@ class VideoApi @Inject constructor() {
             val storageReference = _firebaseStorage.reference
 
             val imageRef = storageReference.child(storagePath)
-            val file = File(fileUri)
-            val uploadTask = imageRef.putFile(Uri.fromFile(file))
+            val file = Uri.parse(fileUri)
+            val uploadTask = imageRef.putFile(file)
 
             suspendCoroutine { continuation ->
                 uploadTask.addOnCompleteListener { task ->
