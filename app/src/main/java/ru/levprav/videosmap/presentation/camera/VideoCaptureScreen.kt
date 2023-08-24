@@ -104,9 +104,7 @@ fun VideoCaptureScreen(viewModel: VideoCaptureScreenViewModel) {
                 if (!recordingStarted.value) {
                     videoCapture.value?.let { videoCapture ->
                         recordingStarted.value = true
-                        val mediaDir = context.externalCacheDirs.firstOrNull()?.let {
-                            File(it, context.getString(R.string.app_name)).apply { mkdirs() }
-                        }
+                        val mediaDir = context.cacheDir
 
                         recording.value = startRecordingVideo(
                             context = context,
