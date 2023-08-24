@@ -1,11 +1,17 @@
 package ru.levprav.videosmap.presentation
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.LaunchedEffect
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -30,10 +36,42 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var navigationManager: NavigationManager
 
-    @RequiresApi(Build.VERSION_CODES.P)
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val requestPermissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            val allGranted = permissions.all { it.value == true }
+            if (allGranted) {
+                Log.d("eee", "yes")
+            } else {
+                Log.d("eee", "no")
+            }
+        }
+
         setContent {
+
+            val permissionsToRequest = arrayOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.INTERNET,
+                Manifest.permission.CAMERA,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.READ_MEDIA_VIDEO,
+                Manifest.permission.ACCESS_MEDIA_LOCATION,
+                Manifest.permission.RECORD_AUDIO
+            )
+
+            val permissionsNeeded = permissionsToRequest.filter {
+                ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+            }
+
+            if (permissionsNeeded.isNotEmpty()) {
+                requestPermissionLauncher.launch(permissionsNeeded.toTypedArray())
+            }
+
             val navController = rememberNavController()
             LaunchedEffect(navigationManager.commands) {
                 navigationManager.commands.collect { command ->
