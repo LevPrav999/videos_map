@@ -75,7 +75,7 @@ fun VideoDetailsScreen(
 
         Button(
             onClick = {
-                viewModel.saveVideo(uri, createVideoThumbnail(context, uri)!!)
+                viewModel.saveVideo(uri, createVideoThumbnail(context, uri)!!, description)
             },
             modifier = Modifier
                 .fillMaxWidth()
