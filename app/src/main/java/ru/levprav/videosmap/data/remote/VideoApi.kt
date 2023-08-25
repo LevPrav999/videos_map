@@ -2,9 +2,13 @@ package ru.levprav.videosmap.data.remote
 
 import android.net.Uri
 import com.google.android.gms.tasks.Tasks
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.ktx.snapshots
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import ru.levprav.videosmap.domain.models.UserModel
 import ru.levprav.videosmap.domain.models.VideoModel
@@ -135,5 +139,9 @@ class VideoApi @Inject constructor() {
             }
 
         }
+    }
+
+    suspend fun getVideoSnapshots(uid: String): Flow<QuerySnapshot> = withContext(Dispatchers.IO) {
+        _firebaseFirestore.collection("videos").whereEqualTo("userId", uid).snapshots()
     }
 }
