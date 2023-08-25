@@ -8,19 +8,21 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ru.levprav.videosmap.domain.repository.UserRepository
+import ru.levprav.videosmap.domain.repository.VideoRepository
 import ru.levprav.videosmap.domain.util.Resource
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfilePageViewModel @Inject constructor(
-    private val repository: UserRepository
+    private val userRepository: UserRepository,
+    private val videoRepository: VideoRepository,
 ) : ViewModel() {
     var state by mutableStateOf(ProfilePageState())
         private set
 
     init {
         viewModelScope.launch {
-            repository.getCurrentUserSnapshots().collect { result ->
+            userRepository.getCurrentUserSnapshots().collect { result ->
                 state = when (result) {
                     is Resource.Loading -> {
                         state.copy(isLoading = true)
@@ -43,6 +45,29 @@ class ProfilePageViewModel @Inject constructor(
                             isLoading = false,
                             error = null,
                             data = data,
+                        )
+                    }
+                }
+            }
+
+        }
+
+        viewModelScope.launch {
+            videoRepository.getVideosFromUidSnapshots(userRepository.getCurrentUserId()!!).collect { result ->
+                state = when (result) {
+                    is Resource.Loading -> {
+                        state.copy(isLoading = true)
+                    }
+
+                    is Resource.Error -> {
+                        state.copy(isLoading = false, error = result.message)
+                    }
+
+                    is Resource.Success -> {
+                        state.copy(
+                            videos = result.data?.sortedByDescending {
+                                it.createdAt
+                            }
                         )
                     }
                 }
