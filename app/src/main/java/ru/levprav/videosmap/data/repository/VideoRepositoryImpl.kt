@@ -12,6 +12,7 @@ import ru.levprav.videosmap.data.location.DefaultLocationTracker
 import ru.levprav.videosmap.data.remote.UserApi
 import ru.levprav.videosmap.data.remote.VideoApi
 import ru.levprav.videosmap.domain.models.VideoModel
+import ru.levprav.videosmap.domain.models.toUserModel
 import ru.levprav.videosmap.domain.repository.VideoRepository
 import ru.levprav.videosmap.domain.util.Resource
 import java.io.ByteArrayOutputStream
@@ -32,8 +33,19 @@ class VideoRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override suspend fun getVideosFromUid(uid: String): Resource<List<VideoModel>> {
-        TODO("Not yet implemented")
+    override suspend fun getVideosFromUid(uid: String): Flow<Resource<List<VideoModel>>> = flow {
+        emit(Resource.Loading())
+        try {
+            val resultVideos = mutableListOf<VideoModel>()
+            val videosIds = videoApi.getVideosByUserId(uid)
+            for(id in videosIds){
+                val videoFromDb = videoApi.getVideoById(id)
+                resultVideos.add(videoFromDb!!)
+            }
+            emit(Resource.Success(resultVideos))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Unknown error"))
+        }
     }
 
     override suspend fun saveVideo(uri: String, byteArray: ByteArray, description: String): Flow<Resource<Unit>> = flow {
@@ -49,7 +61,6 @@ class VideoRepositoryImpl @Inject constructor(
             val imagePath = userApi.getCurrentUserId() + "/image-${time}.${
                 uri.split(".").last()
             }"
-            val created = uri.split("/").last().replace(".mp4", "")
 
             try {
                 val videoUrl = videoApi.saveFileToStorage(videoPath, uri)
