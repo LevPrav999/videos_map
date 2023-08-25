@@ -38,4 +38,6 @@ interface UserRepository {
     suspend fun getFollowings(uid: String): Flow<Resource<List<UserModel>>>
 
     suspend fun getCurrentUserSnapshots(): Flow<Resource<UserModel>>
+
+    fun getCurrentUserId(): String?
 }
