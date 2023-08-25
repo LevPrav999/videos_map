@@ -193,5 +193,6 @@ class UserRepositoryImpl @Inject constructor(
             emit(Resource.Error(e.message ?: "Unknown error"))
         }
     }
+    override fun getCurrentUserId() = api.getCurrentUserId()
 
 }
