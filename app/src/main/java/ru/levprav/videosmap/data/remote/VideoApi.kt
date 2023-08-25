@@ -1,12 +1,16 @@
 package ru.levprav.videosmap.data.remote
 
 import android.net.Uri
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import ru.levprav.videosmap.domain.models.UserModel
 import ru.levprav.videosmap.domain.models.VideoModel
 import ru.levprav.videosmap.domain.models.toMap
+import ru.levprav.videosmap.domain.models.toUserModel
+import ru.levprav.videosmap.domain.models.toVideoModel
 import java.io.File
 import javax.inject.Inject
 import kotlin.coroutines.resume
@@ -84,4 +88,52 @@ class VideoApi @Inject constructor() {
                 }
             }
         }
+
+    suspend fun getVideosByUserId(id: String) = withContext(Dispatchers.IO) {
+        suspendCoroutine { continuation ->
+            _firebaseFirestore.collection("videos").whereEqualTo("userId", id).get().addOnCompleteListener{
+                task ->
+                if (task.isSuccessful) {
+                    if(task.result.documents.size != 0){
+                        val videos = mutableListOf<String>()
+                        for(video in task.result.documents){
+                            videos.add(video.id)
+                        }
+                        continuation.resume(videos)
+                    } else {
+                        continuation.resumeWithException(
+                            Exception("Video data not found")
+                        )
+                    }
+                } else {
+                    continuation.resumeWithException(
+                        task.exception ?: Exception("Error checking video documents")
+                    )
+                }
+            }
+
+        }
+    }
+
+    suspend fun getVideoById(id: String) = withContext(Dispatchers.IO) {
+        suspendCoroutine { continuation ->
+            _firebaseFirestore.collection("videos").document(id).get().addOnCompleteListener{
+                    task ->
+                if (task.isSuccessful) {
+                    if(task.result.data != null){
+                        continuation.resume(task.result.data?.toVideoModel())
+                    } else {
+                        continuation.resumeWithException(
+                            Exception("Video data not found")
+                        )
+                    }
+                } else {
+                    continuation.resumeWithException(
+                        task.exception ?: Exception("Error checking video documents")
+                    )
+                }
+            }
+
+        }
+    }
 }
