@@ -14,7 +14,7 @@ interface VideoRepository {
 
     suspend fun getVideosInBoundingBox(bounds: LatLngBounds): Resource<List<VideoModel>>
 
-    suspend fun getVideosFromUid(uid: String): Resource<List<VideoModel>>
+    suspend fun getVideosFromUid(uid: String): Flow<Resource<List<VideoModel>>>
 
     suspend fun saveVideo(uri: String, byteArray: ByteArray, description: String): Flow<Resource<Unit>>
     suspend fun like(video: VideoModel): Resource<String>
