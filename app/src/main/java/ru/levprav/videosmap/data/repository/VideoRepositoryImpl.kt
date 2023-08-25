@@ -13,6 +13,7 @@ import ru.levprav.videosmap.data.remote.UserApi
 import ru.levprav.videosmap.data.remote.VideoApi
 import ru.levprav.videosmap.domain.models.VideoModel
 import ru.levprav.videosmap.domain.models.toUserModel
+import ru.levprav.videosmap.domain.models.toVideoModel
 import ru.levprav.videosmap.domain.repository.VideoRepository
 import ru.levprav.videosmap.domain.util.Resource
 import java.io.ByteArrayOutputStream
@@ -43,6 +44,25 @@ class VideoRepositoryImpl @Inject constructor(
                 resultVideos.add(videoFromDb!!)
             }
             emit(Resource.Success(resultVideos))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Unknown error"))
+        }
+    }
+
+    override suspend fun getVideosFromUidSnapshots(uid: String): Flow<Resource<List<VideoModel>>> = flow{
+        emit(Resource.Loading())
+        try {
+            videoApi.getVideoSnapshots(uid).collect { snapshot ->
+                if (snapshot.documents.size != 0 && !snapshot.isEmpty) {
+                    val videos = mutableListOf<VideoModel>()
+                    for(video in snapshot.documents){
+                        if(video.data != null){
+                            videos.add(video.data!!.toVideoModel())
+                        }
+                    }
+                    emit(Resource.Success(videos))
+                }
+            }
         } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Unknown error"))
         }
