@@ -2,15 +2,20 @@ package ru.levprav.videosmap.presentation.profile
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,44 +28,58 @@ import coil.compose.AsyncImage
 
 @Composable
 fun ProfilePage(viewModel: ProfilePageViewModel) {
-    LazyColumn(
+    Column(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        item {
-            // AsyncImage
-            AsyncImage(
-                model = viewModel.state.data.imageUrl,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(100.dp)
-                    .aspectRatio(1f)
-                    .clip(CircleShape)
-                    .border(2.dp, Color.Gray)
-            )
+        AsyncImage(
+            model = viewModel.state.data.imageUrl,
+            contentDescription = null,
+            modifier = Modifier
+                .size(100.dp)
+                .aspectRatio(1f)
+                .clip(CircleShape)
+                .border(2.dp, Color.Gray)
+                .padding(16.dp)
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            horizontalArrangement = Arrangement.Absolute.SpaceEvenly
+        ) {
+            StatisticItem(label = "Followers", count = viewModel.state.data.followersCount)
+            StatisticItem(label = "Following", count = viewModel.state.data.followingCount)
+            StatisticItem(label = "Likes", count = viewModel.state.data.likesCount)
         }
 
-        item {
-            // Followers, Following, Likes
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Absolute.SpaceEvenly
+        viewModel.state.data.username?.let { username ->
+            Text(text = username, style = MaterialTheme.typography.headlineLarge, modifier = Modifier.padding(16.dp))
+        }
+        viewModel.state.data.description?.let { description ->
+            Text(text = description, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(16.dp))
+        }
+        if(viewModel.state.videos!!.isNotEmpty()){
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3), // Количество столбцов
+                modifier = Modifier.fillMaxSize().padding(16.dp),
+                contentPadding = PaddingValues(5.dp)
             ) {
-                StatisticItem(label = "Followers", count = viewModel.state.data.followersCount)
-                StatisticItem(label = "Following", count = viewModel.state.data.followingCount)
-                StatisticItem(label = "Likes", count = viewModel.state.data.likesCount)
+                items(viewModel.state.videos!!.size) { item ->
+                    // Создаем элементы с вашими данными
+                    // Например:
+                    Box(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .fillMaxWidth()
+                            .aspectRatio(1f)
+                    ) {
+                        AsyncImage(model = viewModel.state.videos!![item].thumbnailUrl, contentDescription = null)
+                    }
+                }
             }
-        }
 
-        item {
-            // Username and Description
-            viewModel.state.data.username?.let { username ->
-                Text(text = username, style = MaterialTheme.typography.headlineLarge)
-            }
-            viewModel.state.data.description?.let { description ->
-                Text(text = description, style = MaterialTheme.typography.bodyMedium)
-            }
+        }else{
+            Text(text = "No videos yet.")
         }
     }
 }
