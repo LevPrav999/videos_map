@@ -1,6 +1,7 @@
 package ru.levprav.videosmap.presentation.profile
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -60,20 +61,20 @@ fun ProfilePage(viewModel: ProfilePageViewModel) {
         }
         if(viewModel.state.videos!!.isNotEmpty()){
             LazyVerticalGrid(
-                columns = GridCells.Fixed(3), // Количество столбцов
+                columns = GridCells.Fixed(3),
                 modifier = Modifier.fillMaxSize().padding(16.dp),
                 contentPadding = PaddingValues(5.dp)
             ) {
                 items(viewModel.state.videos!!.size) { item ->
-                    // Создаем элементы с вашими данными
-                    // Например:
                     Box(
                         modifier = Modifier
                             .padding(8.dp)
                             .fillMaxWidth()
                             .aspectRatio(1f)
                     ) {
-                        AsyncImage(model = viewModel.state.videos!![item].thumbnailUrl, contentDescription = null)
+                        AsyncImage(model = viewModel.state.videos!![item].thumbnailUrl, contentDescription = null, modifier = Modifier.clickable{
+                            viewModel.navigateToVideo(viewModel.state.videos!![item])
+                        })
                     }
                 }
             }
