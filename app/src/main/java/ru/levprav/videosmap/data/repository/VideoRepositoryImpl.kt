@@ -118,8 +118,14 @@ class VideoRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun unlike(videoId: String): Flow<Resource<Unit>> {
-        TODO("Not yet implemented")
+    override suspend fun unlike(videoId: String): Flow<Resource<Unit>> = flow{
+        emit(Resource.Loading())
+        try{
+            videoApi.unlike(videoId, userApi.getCurrentUserId()!!)
+            emit(Resource.Success(Unit))
+        }catch (e: Exception){
+            emit(Resource.Error(e.message ?: "Unlike error"))
+        }
     }
 
     override suspend fun deleteVideo(videoId: String): Flow<Resource<Unit>> {
