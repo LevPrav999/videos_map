@@ -1,9 +1,5 @@
 package ru.levprav.videosmap.data.repository
 
-import android.content.Context
-import android.graphics.Bitmap
-import android.media.MediaMetadataRetriever
-import android.net.Uri
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import kotlinx.coroutines.flow.Flow
@@ -12,11 +8,9 @@ import ru.levprav.videosmap.data.location.DefaultLocationTracker
 import ru.levprav.videosmap.data.remote.UserApi
 import ru.levprav.videosmap.data.remote.VideoApi
 import ru.levprav.videosmap.domain.models.VideoModel
-import ru.levprav.videosmap.domain.models.toUserModel
 import ru.levprav.videosmap.domain.models.toVideoModel
 import ru.levprav.videosmap.domain.repository.VideoRepository
 import ru.levprav.videosmap.domain.util.Resource
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.Date
 import javax.inject.Inject
@@ -138,8 +132,14 @@ class VideoRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun searchVideo(videoId: String): Resource<List<VideoModel>> {
-        TODO("Not yet implemented")
+    override suspend fun searchVideo(text: String): Flow<Resource<List<VideoModel>>> = flow{
+        emit(Resource.Loading())
+        try{
+            val result = videoApi.getVideosByDescriptionContains(text)
+            emit(Resource.Success(result))
+        }catch (e: Exception){
+            emit(Resource.Error(e.message ?: "Delete error"))
+        }
     }
 
     override suspend fun shareVideo(videoId: String): Resource<String> {
