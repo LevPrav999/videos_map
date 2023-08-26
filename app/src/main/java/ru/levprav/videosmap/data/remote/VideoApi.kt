@@ -3,6 +3,7 @@ package ru.levprav.videosmap.data.remote
 import android.net.Uri
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.snapshots
@@ -144,4 +145,9 @@ class VideoApi @Inject constructor() {
     suspend fun getVideoSnapshots(uid: String): Flow<QuerySnapshot> = withContext(Dispatchers.IO) {
         _firebaseFirestore.collection("videos").whereEqualTo("userId", uid).snapshots()
     }
+
+    suspend fun like(videoId: String, currentUserId: String) = withContext(Dispatchers.IO){
+        _firebaseFirestore.collection("videos").document(videoId).update("liked", FieldValue.arrayUnion(currentUserId))
+    }
+
 }
