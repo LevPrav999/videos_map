@@ -7,15 +7,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import ru.levprav.videosmap.domain.models.VideoModel
 import ru.levprav.videosmap.domain.repository.UserRepository
 import ru.levprav.videosmap.domain.repository.VideoRepository
 import ru.levprav.videosmap.domain.util.Resource
+import ru.levprav.videosmap.navigation.NavigationManager
+import ru.levprav.videosmap.navigation.PreviewNavigation
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfilePageViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val videoRepository: VideoRepository,
+    private val navigationManager: NavigationManager
 ) : ViewModel() {
     var state by mutableStateOf(ProfilePageState())
         private set
@@ -73,5 +77,9 @@ class ProfilePageViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun navigateToVideo(video: VideoModel){
+        //navigationManager.navigate(VideoScreen.navigate(video))
     }
 }
