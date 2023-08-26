@@ -22,7 +22,7 @@ interface VideoRepository {
     suspend fun unlike(videoId: String): Flow<Resource<Unit>>
     suspend fun deleteVideo(videoId: String): Flow<Resource<Unit>>
 
-    suspend fun searchVideo(videoId: String): Resource<List<VideoModel>>
+    suspend fun searchVideo(text: String): Flow<Resource<List<VideoModel>>>
 
     suspend fun shareVideo(videoId: String): Resource<String>
     suspend fun getVideoFile(): Resource<File>
