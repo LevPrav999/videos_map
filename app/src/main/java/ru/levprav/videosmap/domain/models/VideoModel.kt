@@ -12,7 +12,6 @@ data class VideoModel(
     val description: String, // Text description of the video. Used to perform keyword search as well
     val userId: String, // ID of the user who have posted the video
     val position: LatLng, // Coordinates of the position of the video
-    val likeCount: Int, // Video likes count
     val commentCount: Int, // Video comments count
     val liked: List<String>, // Whether the logged in user liked video
 )
@@ -30,7 +29,6 @@ fun VideoModel.toMap(): Map<String, Any?> {
             "latitude" to position.latitude,
             "longitude" to position.longitude
         ),
-        "likeCount" to likeCount,
         "commentCount" to commentCount,
         "liked" to liked
     )
@@ -53,7 +51,6 @@ fun Map<String, Any?>.toVideoModel(): VideoModel {
         description = this["description"] as? String ?: "",
         userId = this["userId"] as? String ?: "",
         position = position,
-        likeCount = this["likeCount"] as? Int ?: 0,
         commentCount = this["commentCount"] as? Int ?: 0,
         liked = (this["liked"] as List<*>).map { it as String }
     )
