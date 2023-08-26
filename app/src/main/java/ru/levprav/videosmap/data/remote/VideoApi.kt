@@ -150,4 +150,9 @@ class VideoApi @Inject constructor() {
         _firebaseFirestore.collection("videos").document(videoId).update("liked", FieldValue.arrayUnion(currentUserId))
     }
 
+    suspend fun unlike(videoId: String, currentUserId: String) = withContext(Dispatchers.IO){
+        _firebaseFirestore.collection("videos").document(videoId).update("liked", FieldValue.arrayRemove(currentUserId))
+    }
+
+
 }
