@@ -109,15 +109,15 @@ class VideoRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun like(video: VideoModel): Resource<String> {
+    override suspend fun like(videoId: String): Flow<Resource<Unit>> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun unlike(video: VideoModel): Resource<String> {
+    override suspend fun unlike(videoId: String): Flow<Resource<Unit>> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteVideo(videoId: String): Resource<String> {
+    override suspend fun deleteVideo(videoId: String): Flow<Resource<Unit>> {
         TODO("Not yet implemented")
     }
 
