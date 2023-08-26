@@ -95,7 +95,6 @@ class VideoRepositoryImpl @Inject constructor(
                     description = description,
                     userId = userApi.getCurrentUserId()!!,
                     position = location,
-                    likeCount = 0,
                     commentCount = 0,
                     liked = listOf()
                 )
@@ -109,8 +108,14 @@ class VideoRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun like(videoId: String): Flow<Resource<Unit>> {
-        TODO("Not yet implemented")
+    override suspend fun like(videoId: String): Flow<Resource<Unit>> = flow{
+        emit(Resource.Loading())
+        try{
+            videoApi.like(videoId, userApi.getCurrentUserId()!!)
+            emit(Resource.Success(Unit))
+        }catch (e: Exception){
+            emit(Resource.Error(e.message ?: "Like error"))
+        }
     }
 
     override suspend fun unlike(videoId: String): Flow<Resource<Unit>> {
