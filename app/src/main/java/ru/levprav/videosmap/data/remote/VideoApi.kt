@@ -154,5 +154,7 @@ class VideoApi @Inject constructor() {
         _firebaseFirestore.collection("videos").document(videoId).update("liked", FieldValue.arrayRemove(currentUserId))
     }
 
-
+    suspend fun deleteVideo(videoId: String) = withContext(Dispatchers.IO){
+        _firebaseFirestore.collection("videos").document(videoId).delete()
+    }
 }
