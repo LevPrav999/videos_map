@@ -107,7 +107,7 @@ class VideoApi @Inject constructor() {
                         continuation.resume(videos)
                     } else {
                         continuation.resumeWithException(
-                            Exception("Video data not found")
+                            Exception("Videos data not found")
                         )
                     }
                 } else {
@@ -156,5 +156,31 @@ class VideoApi @Inject constructor() {
 
     suspend fun deleteVideo(videoId: String) = withContext(Dispatchers.IO){
         _firebaseFirestore.collection("videos").document(videoId).delete()
+    }
+
+    suspend fun getVideosByDescriptionContains(text: String) = withContext(Dispatchers.IO) {
+        suspendCoroutine { continuation ->
+            _firebaseFirestore.collection("videos").whereEqualTo("description", text).get().addOnCompleteListener{
+                    task ->
+                if (task.isSuccessful) {
+                    if(task.result.documents.size != 0){
+                        val videos = mutableListOf<VideoModel>()
+                        for(video in task.result.documents){
+                            videos.add(video.data!!.toVideoModel())
+                        }
+                        continuation.resume(videos)
+                    } else {
+                        continuation.resumeWithException(
+                            Exception("Videos data not found")
+                        )
+                    }
+                } else {
+                    continuation.resumeWithException(
+                        task.exception ?: Exception("Error checking video documents")
+                    )
+                }
+            }
+
+        }
     }
 }
