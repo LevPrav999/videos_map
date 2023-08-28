@@ -20,6 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.levprav.videosmap.navigation.DetailsNavigation
 import ru.levprav.videosmap.navigation.NavigationDirections
 import ru.levprav.videosmap.navigation.NavigationManager
+import ru.levprav.videosmap.navigation.PlayerNavigation
 import ru.levprav.videosmap.navigation.PreviewNavigation
 import ru.levprav.videosmap.presentation.auth.AuthPage
 import ru.levprav.videosmap.presentation.camera.VideoDetailsScreen
@@ -27,6 +28,7 @@ import ru.levprav.videosmap.presentation.camera.VideoPreviewScreen
 import ru.levprav.videosmap.presentation.edituser.EditUserPage
 import ru.levprav.videosmap.presentation.main.TabsPage
 import ru.levprav.videosmap.presentation.splash.SplashScreen
+import ru.levprav.videosmap.presentation.video.VideoPlayer
 import javax.inject.Inject
 
 
@@ -112,6 +114,15 @@ class MainActivity : ComponentActivity() {
 
                     backStackEntry.arguments?.getString(DetailsNavigation.KEY_URI)
                         ?.let { VideoDetailsScreen(it, hiltViewModel()) }
+                }
+
+                composable(PlayerNavigation.route, arguments = PlayerNavigation.arguments)
+                { backStackEntry ->
+
+                    backStackEntry.arguments?.getString(PlayerNavigation.KEY_URI)
+                        ?.let { it1 -> backStackEntry.arguments?.getString(PlayerNavigation.THUMBNAIL_URI)?.let { it2 ->
+                            VideoPlayer(video = it1, thumbnailUrl = it2)
+                        } }
                 }
             }
         }
