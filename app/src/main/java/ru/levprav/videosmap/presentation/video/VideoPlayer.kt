@@ -91,62 +91,51 @@ fun VideoPlayer(
         }
     }
 
-    DisposableEffect(key1 = AndroidView(factory = {
-        playerView
-    }, modifier = Modifier.pointerInput(Unit) {
-        detectTapGestures(onTap = {
-            if(exoPlayer.isPlaying){
-                exoPlayer.pause()
-            }else{
-                exoPlayer.play()
-            }
-            pauseButtonVisibility = !pauseButtonVisibility
-        }, onDoubleTap = { offset ->
-
-        })
-    }), effect = {
+    DisposableEffect(Unit){
         onDispose {
             thumbnail = thumbnail.copy(second = true)
             exoPlayer.release()
             pauseButtonVisibility = false
         }
-    })
+    }
 
-    AndroidView(factory = {
-        playerView
-    }, modifier = Modifier.pointerInput(Unit) {
-        detectTapGestures(onTap = {
-            if(exoPlayer.isPlaying){
-                exoPlayer.pause()
-            }else{
-                exoPlayer.play()
-            }
-            pauseButtonVisibility = !pauseButtonVisibility
-        }, onDoubleTap = { offset ->
-            // like
+    Box(modifier = Modifier.fillMaxSize()) {
+        AndroidView(factory = {
+            playerView
+        }, modifier = Modifier.pointerInput(Unit) {
+            detectTapGestures(onTap = {
+                if(exoPlayer.isPlaying){
+                    exoPlayer.pause()
+                }else{
+                    exoPlayer.play()
+                }
+                pauseButtonVisibility = !pauseButtonVisibility
+            }, onDoubleTap = { offset ->
+                // like
+            })
         })
-    })
 
-    AnimatedVisibility(
-        visible = pauseButtonVisibility,
-        enter = scaleIn(spring(Spring.DampingRatioMediumBouncy), initialScale = 1.5f),
-        exit = scaleOut(tween(150))
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_play),
-            contentDescription = null,
-            tint = Color.White,
-            modifier = Modifier.size(36.dp)
-        )
+        AnimatedVisibility(
+            visible = pauseButtonVisibility,
+            enter = scaleIn(spring(Spring.DampingRatioMediumBouncy), initialScale = 1.5f),
+            exit = scaleOut(tween(150)),
+            modifier = Modifier.align(Alignment.Center)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_play),
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(36.dp)
+            )
+        }
+
+        if (thumbnail.second) {
+            AsyncImage(
+                model = thumbnail,
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        }
     }
-
-    if (thumbnail.second) {
-        AsyncImage(
-            model = thumbnail,
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
-    }
-
 }
