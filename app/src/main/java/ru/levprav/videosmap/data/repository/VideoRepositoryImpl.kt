@@ -43,6 +43,16 @@ class VideoRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getVideoById(id: String): Flow<Resource<VideoModel>> = flow{
+        emit(Resource.Loading())
+        try {
+            val videoFromDb = videoApi.getVideoById(id)
+            emit(Resource.Success(videoFromDb))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Unknown error"))
+        }
+    }
+
     override suspend fun getVideosFromUidSnapshots(uid: String): Flow<Resource<List<VideoModel>>> = flow{
         emit(Resource.Loading())
         try {
@@ -102,21 +112,23 @@ class VideoRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun like(videoId: String): Flow<Resource<Unit>> = flow{
+    override suspend fun like(videoId: String): Flow<Resource<VideoModel>> = flow{
         emit(Resource.Loading())
         try{
             videoApi.like(videoId, userApi.getCurrentUserId()!!)
-            emit(Resource.Success(Unit))
+            val video = videoApi.getVideoById(videoId)
+            emit(Resource.Success(video!!))
         }catch (e: Exception){
             emit(Resource.Error(e.message ?: "Like error"))
         }
     }
 
-    override suspend fun unlike(videoId: String): Flow<Resource<Unit>> = flow{
+    override suspend fun unlike(videoId: String): Flow<Resource<VideoModel>> = flow{
         emit(Resource.Loading())
         try{
             videoApi.unlike(videoId, userApi.getCurrentUserId()!!)
-            emit(Resource.Success(Unit))
+            val video = videoApi.getVideoById(videoId)
+            emit(Resource.Success(video!!))
         }catch (e: Exception){
             emit(Resource.Error(e.message ?: "Unlike error"))
         }
