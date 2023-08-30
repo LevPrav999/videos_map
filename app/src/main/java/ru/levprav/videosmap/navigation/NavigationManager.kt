@@ -15,4 +15,5 @@ class NavigationManager(private val externalScope: CoroutineScope) {
             commands.emit(directions)
         }
     }
+
 }
