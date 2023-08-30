@@ -1,13 +1,11 @@
 package ru.levprav.videosmap.presentation.camera
 
-import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
-import android.util.Size
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -30,10 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.content.FileProvider
-import androidx.core.net.toUri
 import java.io.ByteArrayOutputStream
-import java.io.File
 
 
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -47,8 +42,14 @@ fun VideoDetailsScreen(
     var thumbnailBitmap by remember { mutableStateOf<Bitmap?>(null) }
     val context = LocalContext.current
 
-    LaunchedEffect(Unit){
-        thumbnailBitmap = createVideoThumbnail(context, uri)?.let { BitmapFactory.decodeByteArray(createVideoThumbnail(context, uri), 0, it.size) }
+    LaunchedEffect(Unit) {
+        thumbnailBitmap = createVideoThumbnail(context, uri)?.let {
+            BitmapFactory.decodeByteArray(
+                createVideoThumbnail(context, uri),
+                0,
+                it.size
+            )
+        }
     }
 
 
@@ -77,7 +78,7 @@ fun VideoDetailsScreen(
 
         Button(
             onClick = {
-                if(!viewModel.state.isLoading){
+                if (!viewModel.state.isLoading) {
                     viewModel.saveVideo(uri, createVideoThumbnail(context, uri)!!, description)
                 }
             },
@@ -85,7 +86,9 @@ fun VideoDetailsScreen(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            if (viewModel.state.isLoading) CircularProgressIndicator(color = Color.White) else Text(text = "Upload video")
+            if (viewModel.state.isLoading) CircularProgressIndicator(color = Color.White) else Text(
+                text = "Upload video"
+            )
         }
     }
 }
@@ -99,7 +102,7 @@ fun createVideoThumbnail(context: Context, videoUri: String): ByteArray? {
     try {
         retriever.setDataSource(context, file)
 
-        val thumbnailBitmap = retriever.getFrameAtTime()
+        val thumbnailBitmap = retriever.frameAtTime
         val stream = ByteArrayOutputStream()
         thumbnailBitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
 

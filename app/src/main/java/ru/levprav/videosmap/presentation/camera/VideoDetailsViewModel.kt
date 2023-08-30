@@ -6,17 +6,13 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ru.levprav.videosmap.data.repository.VideoRepositoryImpl
 import ru.levprav.videosmap.domain.util.Resource
-import ru.levprav.videosmap.navigation.NavigationManager
-import ru.levprav.videosmap.presentation.profile.ProfilePageState
 import javax.inject.Inject
 
 @HiltViewModel
 class VideoDetailsViewModel @Inject constructor(
-    private val navigationManager: NavigationManager,
     private val repository: VideoRepositoryImpl
 ) : ViewModel() {
 
@@ -25,9 +21,8 @@ class VideoDetailsViewModel @Inject constructor(
 
     fun saveVideo(uri: String, bytes: ByteArray, description: String) {
         viewModelScope.launch {
-            repository.saveVideo(uri, bytes, description).collect{
-                result ->
-                state = when(result){
+            repository.saveVideo(uri, bytes, description).collect { result ->
+                state = when (result) {
                     is Resource.Loading -> {
                         state.copy(isLoading = true, error = null)
                     }

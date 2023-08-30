@@ -1,7 +1,5 @@
 package ru.levprav.videosmap.domain.repository
 
-import android.content.Context
-import android.net.Uri
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import kotlinx.coroutines.flow.Flow
@@ -19,7 +17,12 @@ interface VideoRepository {
     suspend fun getVideoById(id: String): Flow<Resource<VideoModel>>
     suspend fun getVideosFromUidSnapshots(uid: String): Flow<Resource<List<VideoModel>>>
 
-    suspend fun saveVideo(uri: String, byteArray: ByteArray, description: String): Flow<Resource<Unit>>
+    suspend fun saveVideo(
+        uri: String,
+        byteArray: ByteArray,
+        description: String
+    ): Flow<Resource<Unit>>
+
     suspend fun like(videoId: String): Flow<Resource<VideoModel>>
     suspend fun unlike(videoId: String): Flow<Resource<VideoModel>>
     suspend fun deleteVideo(videoId: String): Flow<Resource<Unit>>

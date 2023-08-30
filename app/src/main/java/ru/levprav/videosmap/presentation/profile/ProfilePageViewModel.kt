@@ -13,9 +13,6 @@ import ru.levprav.videosmap.domain.repository.VideoRepository
 import ru.levprav.videosmap.domain.util.Resource
 import ru.levprav.videosmap.navigation.NavigationManager
 import ru.levprav.videosmap.navigation.PlayerNavigation
-import ru.levprav.videosmap.navigation.PreviewNavigation
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
 @HiltViewModel
@@ -60,29 +57,30 @@ class ProfilePageViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            videoRepository.getVideosFromUidSnapshots(userRepository.getCurrentUserId()!!).collect { result ->
-                state = when (result) {
-                    is Resource.Loading -> {
-                        state.copy(isLoading = true)
-                    }
+            videoRepository.getVideosFromUidSnapshots(userRepository.getCurrentUserId()!!)
+                .collect { result ->
+                    state = when (result) {
+                        is Resource.Loading -> {
+                            state.copy(isLoading = true)
+                        }
 
-                    is Resource.Error -> {
-                        state.copy(isLoading = false, error = result.message)
-                    }
+                        is Resource.Error -> {
+                            state.copy(isLoading = false, error = result.message)
+                        }
 
-                    is Resource.Success -> {
-                        state.copy(
-                            videos = result.data?.sortedByDescending {
-                                it.createdAt
-                            }
-                        )
+                        is Resource.Success -> {
+                            state.copy(
+                                videos = result.data?.sortedByDescending {
+                                    it.createdAt
+                                }
+                            )
+                        }
                     }
                 }
-            }
         }
     }
 
-    fun navigateToVideo(video: VideoModel){
+    fun navigateToVideo(video: VideoModel) {
         navigationManager.navigate(PlayerNavigation.playerScreen(video.id))
     }
 }

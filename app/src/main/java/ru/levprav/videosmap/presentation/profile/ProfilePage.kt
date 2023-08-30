@@ -12,11 +12,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,7 +43,9 @@ fun ProfilePage(viewModel: ProfilePageViewModel) {
         )
 
         Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             horizontalArrangement = Arrangement.Absolute.SpaceEvenly
         ) {
             StatisticItem(label = "Followers", count = viewModel.state.data.followersCount)
@@ -54,15 +54,25 @@ fun ProfilePage(viewModel: ProfilePageViewModel) {
         }
 
         viewModel.state.data.username?.let { username ->
-            Text(text = username, style = MaterialTheme.typography.headlineLarge, modifier = Modifier.padding(16.dp))
+            Text(
+                text = username,
+                style = MaterialTheme.typography.headlineLarge,
+                modifier = Modifier.padding(16.dp)
+            )
         }
         viewModel.state.data.description?.let { description ->
-            Text(text = description, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(16.dp))
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(16.dp)
+            )
         }
-        if(viewModel.state.videos!!.isNotEmpty()){
+        if (viewModel.state.videos!!.isNotEmpty()) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
-                modifier = Modifier.fillMaxSize().padding(16.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
                 contentPadding = PaddingValues(5.dp)
             ) {
                 items(viewModel.state.videos!!.size) { item ->
@@ -72,14 +82,17 @@ fun ProfilePage(viewModel: ProfilePageViewModel) {
                             .fillMaxWidth()
                             .aspectRatio(1f)
                     ) {
-                        AsyncImage(model = viewModel.state.videos!![item].thumbnailUrl, contentDescription = null, modifier = Modifier.clickable{
-                            viewModel.navigateToVideo(viewModel.state.videos!![item])
-                        })
+                        AsyncImage(
+                            model = viewModel.state.videos!![item].thumbnailUrl,
+                            contentDescription = null,
+                            modifier = Modifier.clickable {
+                                viewModel.navigateToVideo(viewModel.state.videos!![item])
+                            })
                     }
                 }
             }
 
-        }else{
+        } else {
             Text(text = "No videos yet.")
         }
     }

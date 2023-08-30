@@ -1,8 +1,6 @@
 package ru.levprav.videosmap.data.remote
 
 import android.net.Uri
-import com.google.android.gms.tasks.Tasks
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
@@ -11,12 +9,9 @@ import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import ru.levprav.videosmap.domain.models.UserModel
 import ru.levprav.videosmap.domain.models.VideoModel
 import ru.levprav.videosmap.domain.models.toMap
-import ru.levprav.videosmap.domain.models.toUserModel
 import ru.levprav.videosmap.domain.models.toVideoModel
-import java.io.File
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -96,48 +91,48 @@ class VideoApi @Inject constructor() {
 
     suspend fun getVideosByUserId(id: String) = withContext(Dispatchers.IO) {
         suspendCoroutine { continuation ->
-            _firebaseFirestore.collection("videos").whereEqualTo("userId", id).get().addOnCompleteListener{
-                task ->
-                if (task.isSuccessful) {
-                    if(task.result.documents.size != 0){
-                        val videos = mutableListOf<String>()
-                        for(video in task.result.documents){
-                            videos.add(video.id)
+            _firebaseFirestore.collection("videos").whereEqualTo("userId", id).get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        if (task.result.documents.size != 0) {
+                            val videos = mutableListOf<String>()
+                            for (video in task.result.documents) {
+                                videos.add(video.id)
+                            }
+                            continuation.resume(videos)
+                        } else {
+                            continuation.resumeWithException(
+                                Exception("Videos data not found")
+                            )
                         }
-                        continuation.resume(videos)
                     } else {
                         continuation.resumeWithException(
-                            Exception("Videos data not found")
+                            task.exception ?: Exception("Error checking video documents")
                         )
                     }
-                } else {
-                    continuation.resumeWithException(
-                        task.exception ?: Exception("Error checking video documents")
-                    )
                 }
-            }
 
         }
     }
 
     suspend fun getVideoById(id: String) = withContext(Dispatchers.IO) {
         suspendCoroutine { continuation ->
-            _firebaseFirestore.collection("videos").document(id).get().addOnCompleteListener{
-                    task ->
-                if (task.isSuccessful) {
-                    if(task.result.data != null){
-                        continuation.resume(task.result.data?.toVideoModel())
+            _firebaseFirestore.collection("videos").document(id).get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        if (task.result.data != null) {
+                            continuation.resume(task.result.data?.toVideoModel())
+                        } else {
+                            continuation.resumeWithException(
+                                Exception("Video data not found")
+                            )
+                        }
                     } else {
                         continuation.resumeWithException(
-                            Exception("Video data not found")
+                            task.exception ?: Exception("Error checking video documents")
                         )
                     }
-                } else {
-                    continuation.resumeWithException(
-                        task.exception ?: Exception("Error checking video documents")
-                    )
                 }
-            }
 
         }
     }
@@ -146,40 +141,42 @@ class VideoApi @Inject constructor() {
         _firebaseFirestore.collection("videos").whereEqualTo("userId", uid).snapshots()
     }
 
-    suspend fun like(videoId: String, currentUserId: String) = withContext(Dispatchers.IO){
-        _firebaseFirestore.collection("videos").document(videoId).update("liked", FieldValue.arrayUnion(currentUserId))
+    suspend fun like(videoId: String, currentUserId: String) = withContext(Dispatchers.IO) {
+        _firebaseFirestore.collection("videos").document(videoId)
+            .update("liked", FieldValue.arrayUnion(currentUserId))
     }
 
-    suspend fun unlike(videoId: String, currentUserId: String) = withContext(Dispatchers.IO){
-        _firebaseFirestore.collection("videos").document(videoId).update("liked", FieldValue.arrayRemove(currentUserId))
+    suspend fun unlike(videoId: String, currentUserId: String) = withContext(Dispatchers.IO) {
+        _firebaseFirestore.collection("videos").document(videoId)
+            .update("liked", FieldValue.arrayRemove(currentUserId))
     }
 
-    suspend fun deleteVideo(videoId: String) = withContext(Dispatchers.IO){
+    suspend fun deleteVideo(videoId: String) = withContext(Dispatchers.IO) {
         _firebaseFirestore.collection("videos").document(videoId).delete()
     }
 
     suspend fun getVideosByDescriptionContains(text: String) = withContext(Dispatchers.IO) {
         suspendCoroutine { continuation ->
-            _firebaseFirestore.collection("videos").whereEqualTo("description", text).get().addOnCompleteListener{
-                    task ->
-                if (task.isSuccessful) {
-                    if(task.result.documents.size != 0){
-                        val videos = mutableListOf<VideoModel>()
-                        for(video in task.result.documents){
-                            videos.add(video.data!!.toVideoModel())
+            _firebaseFirestore.collection("videos").whereEqualTo("description", text).get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        if (task.result.documents.size != 0) {
+                            val videos = mutableListOf<VideoModel>()
+                            for (video in task.result.documents) {
+                                videos.add(video.data!!.toVideoModel())
+                            }
+                            continuation.resume(videos)
+                        } else {
+                            continuation.resumeWithException(
+                                Exception("Videos data not found")
+                            )
                         }
-                        continuation.resume(videos)
                     } else {
                         continuation.resumeWithException(
-                            Exception("Videos data not found")
+                            task.exception ?: Exception("Error checking video documents")
                         )
                     }
-                } else {
-                    continuation.resumeWithException(
-                        task.exception ?: Exception("Error checking video documents")
-                    )
                 }
-            }
 
         }
     }

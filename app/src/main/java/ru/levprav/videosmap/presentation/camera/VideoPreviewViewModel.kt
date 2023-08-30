@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ru.levprav.videosmap.navigation.DetailsNavigation
 import ru.levprav.videosmap.navigation.NavigationManager
-import ru.levprav.videosmap.navigation.PreviewNavigation
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import javax.inject.Inject

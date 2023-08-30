@@ -52,11 +52,13 @@ fun VideoPreviewScreen(
             },
             modifier = Modifier.fillMaxSize()
         )
-        IconButton(onClick = {
-            viewModel.navigate(uri)
-        }, modifier = Modifier
-            .align(Alignment.TopEnd)
-            .padding(bottom = 32.dp)) {
+        IconButton(
+            onClick = {
+                viewModel.navigate(uri)
+            }, modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(bottom = 32.dp)
+        ) {
             Icon(
                 painter = painterResource(R.drawable.ic_next_arrow),
                 contentDescription = "",

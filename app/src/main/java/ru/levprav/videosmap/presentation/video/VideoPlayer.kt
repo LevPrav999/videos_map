@@ -1,4 +1,5 @@
 package ru.levprav.videosmap.presentation.video
+
 import android.net.Uri
 import android.view.ViewGroup
 import androidx.compose.animation.AnimatedVisibility
@@ -17,17 +18,32 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
@@ -56,10 +72,10 @@ fun VideoPlayer(
     videoId: String,
     viewModel: VideoPlayerViewModel
 ) {
-    if(viewModel.state.data == null){
+    if (viewModel.state.data == null) {
         viewModel.loadVideoModel(videoId)
         CircularProgressIndicator()
-    }else{
+    } else {
         val video = viewModel.state.data!!
         val context = LocalContext.current
         var thumbnail by remember {
@@ -93,6 +109,7 @@ fun VideoPlayer(
                         exoPlayer.pause()
                         pauseButtonVisibility = false
                     }
+
                     Lifecycle.Event.ON_START -> exoPlayer.play()
                     else -> {}
                 }
@@ -115,7 +132,7 @@ fun VideoPlayer(
         }
 
 
-        DisposableEffect(Unit){
+        DisposableEffect(Unit) {
             onDispose {
                 thumbnail = thumbnail.copy(second = true)
                 exoPlayer.release()
@@ -128,10 +145,10 @@ fun VideoPlayer(
                 playerView
             }, modifier = Modifier.pointerInput(Unit) {
                 detectTapGestures(onTap = {
-                    pauseButtonVisibility = if(exoPlayer.isPlaying){
+                    pauseButtonVisibility = if (exoPlayer.isPlaying) {
                         exoPlayer.pause()
                         true
-                    }else{
+                    } else {
                         exoPlayer.play()
                         false
                     }
@@ -151,13 +168,12 @@ fun VideoPlayer(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
-                        item = video,
-                        showUploadDate=true,
+                        item = video
                     )
 
                     SideItems(
                         modifier = Modifier,
-                        item=video,
+                        item = video,
                         onclickComment = {},
                         onClickUser = {
                             //viewModel.navigateToUser()
@@ -200,9 +216,12 @@ fun VideoPlayer(
                 painter = painterResource(id = R.drawable.ic_back),
                 contentDescription = null,
                 tint = Color.White,
-                modifier = Modifier.align(Alignment.TopStart).padding(5.dp).clickable{
-                                                                                     viewModel.navigateBack()
-                },
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(5.dp)
+                    .clickable {
+                        viewModel.navigateBack()
+                    },
             )
         }
     }
@@ -221,7 +240,7 @@ fun SideItems(
 
     val context = LocalContext.current
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        viewModel.state.avatar?.let{
+        viewModel.state.avatar?.let {
             AsyncImage(
                 model = it,
                 contentDescription = null,
@@ -236,10 +255,10 @@ fun SideItems(
                     },
                 contentScale = ContentScale.Crop
             )
-        }?: Image(
-                painter =
-                    painterResource(id = R.drawable.ic_launcher_background),
-        contentDescription = "Avatar",
+        } ?: Image(
+            painter =
+            painterResource(id = R.drawable.ic_launcher_background),
+            contentDescription = "Avatar",
             modifier = Modifier
                 .size(50.dp)
                 .border(
@@ -252,7 +271,7 @@ fun SideItems(
             contentScale = ContentScale.Crop
         )
 
-        if(!viewModel.state.isSubscribed){
+        if (!viewModel.state.isSubscribed) {
             Image(
                 painter = painterResource(id = R.drawable.ic_plus),
                 contentDescription = null,
@@ -349,13 +368,14 @@ fun LikeIconButton(
 @Composable
 fun FooterUi(
     modifier: Modifier,
-    item: VideoModel,
-    showUploadDate: Boolean,
+    item: VideoModel
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.Bottom) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier) {
             Text(
-                text = item.description, style = MaterialTheme.typography.bodyMedium, color = Color.White
+                text = item.description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White
             )
         }
         Spacer(modifier = Modifier.height(5.dp))

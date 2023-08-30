@@ -33,7 +33,7 @@ class VideoRepositoryImpl @Inject constructor(
         try {
             val resultVideos = mutableListOf<VideoModel>()
             val videosIds = videoApi.getVideosByUserId(uid)
-            for(id in videosIds){
+            for (id in videosIds) {
                 val videoFromDb = videoApi.getVideoById(id)
                 resultVideos.add(videoFromDb!!)
             }
@@ -43,7 +43,7 @@ class VideoRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getVideoById(id: String): Flow<Resource<VideoModel>> = flow{
+    override suspend fun getVideoById(id: String): Flow<Resource<VideoModel>> = flow {
         emit(Resource.Loading())
         try {
             val videoFromDb = videoApi.getVideoById(id)
@@ -53,26 +53,31 @@ class VideoRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getVideosFromUidSnapshots(uid: String): Flow<Resource<List<VideoModel>>> = flow{
-        emit(Resource.Loading())
-        try {
-            videoApi.getVideoSnapshots(uid).collect { snapshot ->
-                if (snapshot.documents.size != 0 && !snapshot.isEmpty) {
-                    val videos = mutableListOf<VideoModel>()
-                    for(video in snapshot.documents){
-                        if(video.data != null){
-                            videos.add(video.data!!.toVideoModel())
+    override suspend fun getVideosFromUidSnapshots(uid: String): Flow<Resource<List<VideoModel>>> =
+        flow {
+            emit(Resource.Loading())
+            try {
+                videoApi.getVideoSnapshots(uid).collect { snapshot ->
+                    if (snapshot.documents.size != 0 && !snapshot.isEmpty) {
+                        val videos = mutableListOf<VideoModel>()
+                        for (video in snapshot.documents) {
+                            if (video.data != null) {
+                                videos.add(video.data!!.toVideoModel())
+                            }
                         }
+                        emit(Resource.Success(videos))
                     }
-                    emit(Resource.Success(videos))
                 }
+            } catch (e: Exception) {
+                emit(Resource.Error(e.message ?: "Unknown error"))
             }
-        } catch (e: Exception) {
-            emit(Resource.Error(e.message ?: "Unknown error"))
         }
-    }
 
-    override suspend fun saveVideo(uri: String, byteArray: ByteArray, description: String): Flow<Resource<Unit>> = flow {
+    override suspend fun saveVideo(
+        uri: String,
+        byteArray: ByteArray,
+        description: String
+    ): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading())
         val location = locationTracker.getCurrentLocation()
         if (location == null) {
@@ -112,44 +117,44 @@ class VideoRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun like(videoId: String): Flow<Resource<VideoModel>> = flow{
+    override suspend fun like(videoId: String): Flow<Resource<VideoModel>> = flow {
         emit(Resource.Loading())
-        try{
+        try {
             videoApi.like(videoId, userApi.getCurrentUserId()!!)
             val video = videoApi.getVideoById(videoId)
             emit(Resource.Success(video!!))
-        }catch (e: Exception){
+        } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Like error"))
         }
     }
 
-    override suspend fun unlike(videoId: String): Flow<Resource<VideoModel>> = flow{
+    override suspend fun unlike(videoId: String): Flow<Resource<VideoModel>> = flow {
         emit(Resource.Loading())
-        try{
+        try {
             videoApi.unlike(videoId, userApi.getCurrentUserId()!!)
             val video = videoApi.getVideoById(videoId)
             emit(Resource.Success(video!!))
-        }catch (e: Exception){
+        } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Unlike error"))
         }
     }
 
-    override suspend fun deleteVideo(videoId: String): Flow<Resource<Unit>> = flow{
+    override suspend fun deleteVideo(videoId: String): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading())
-        try{
+        try {
             videoApi.deleteVideo(videoId)
             emit(Resource.Success(Unit))
-        }catch (e: Exception){
+        } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Delete error"))
         }
     }
 
-    override suspend fun searchVideo(text: String): Flow<Resource<List<VideoModel>>> = flow{
+    override suspend fun searchVideo(text: String): Flow<Resource<List<VideoModel>>> = flow {
         emit(Resource.Loading())
-        try{
+        try {
             val result = videoApi.getVideosByDescriptionContains(text)
             emit(Resource.Success(result))
-        }catch (e: Exception){
+        } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Delete error"))
         }
     }
