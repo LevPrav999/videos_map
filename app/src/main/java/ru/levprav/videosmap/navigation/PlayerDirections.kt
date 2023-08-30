@@ -5,24 +5,20 @@ import androidx.navigation.navArgument
 
 object PlayerNavigation {
 
-    val KEY_URI = "videoId"
-    val THUMBNAIL_URI = "thumbnail"
-    val route = "videoDetails/{$KEY_URI}/{$THUMBNAIL_URI}"
+    val VIDEO_ID = "videoId"
+    val route = "video/{$VIDEO_ID}"
     val arguments = listOf(
-        navArgument(KEY_URI) { type = NavType.StringType },
-        navArgument(THUMBNAIL_URI) { type = NavType.StringType }
+        navArgument(VIDEO_ID) { type = NavType.StringType },
     )
 
     fun playerScreen(
-        videoUrl: String? = null,
-        thumbnailUrl: String? = null
+        videoId: String? = null,
     ) = object : NavigationCommand {
 
 
-        override val destination = "videoDetails/$videoUrl/$thumbnailUrl"
+        override val destination = "video/$videoId"
         override val arguments = listOf(
-            navArgument(KEY_URI) { type = NavType.StringType },
-            navArgument(THUMBNAIL_URI) { type = NavType.StringType }
+            navArgument(VIDEO_ID) { type = NavType.StringType },
         )
         override val clearStack = false
     }
