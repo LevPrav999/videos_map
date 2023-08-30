@@ -83,14 +83,6 @@ class ProfilePageViewModel @Inject constructor(
     }
 
     fun navigateToVideo(video: VideoModel){
-        val videoUrlEncoded = URLEncoder.encode(
-            video.url,
-            StandardCharsets.UTF_8.toString()
-        )
-        val thumbnailUrlEncoded = URLEncoder.encode(
-            video.thumbnailUrl,
-            StandardCharsets.UTF_8.toString()
-        )
-        navigationManager.navigate(PlayerNavigation.playerScreen(videoUrlEncoded, thumbnailUrlEncoded))
+        navigationManager.navigate(PlayerNavigation.playerScreen(video.id))
     }
 }
