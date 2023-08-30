@@ -119,10 +119,9 @@ class MainActivity : ComponentActivity() {
                 composable(PlayerNavigation.route, arguments = PlayerNavigation.arguments)
                 { backStackEntry ->
 
-                    backStackEntry.arguments?.getString(PlayerNavigation.KEY_URI)
-                        ?.let { it1 -> backStackEntry.arguments?.getString(PlayerNavigation.THUMBNAIL_URI)?.let { it2 ->
-                            VideoPlayer(video = it1, thumbnailUrl = it2)
-                        } }
+                    backStackEntry.arguments?.getString(PlayerNavigation.VIDEO_ID)?.let { it ->
+                        VideoPlayer(videoId = it, hiltViewModel())
+                    }
                 }
             }
         }
