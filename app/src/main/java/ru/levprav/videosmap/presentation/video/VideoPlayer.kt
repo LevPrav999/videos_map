@@ -160,7 +160,9 @@ fun VideoPlayer(
                     SideItems(
                         modifier = Modifier,
                         item = video,
-                        onclickComment = {},
+                        onclickComment = {
+                            viewModel.navigateToComments(videoId)
+                        },
                         onClickUser = {
                             //viewModel.navigateToUser()
                         },
