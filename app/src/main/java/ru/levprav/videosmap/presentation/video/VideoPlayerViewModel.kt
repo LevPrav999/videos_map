@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import ru.levprav.videosmap.domain.repository.UserRepository
 import ru.levprav.videosmap.domain.repository.VideoRepository
 import ru.levprav.videosmap.domain.util.Resource
+import ru.levprav.videosmap.navigation.CommentsNavigation
 import ru.levprav.videosmap.navigation.NavigationDirections
 import ru.levprav.videosmap.navigation.NavigationManager
 import javax.inject.Inject
@@ -156,5 +157,9 @@ class VideoPlayerViewModel @Inject constructor(
 
     fun navigateBack() {
         navigationManager.navigate(NavigationDirections.mainScreen)
+    }
+
+    fun navigateToComments(videoId: String) {
+        navigationManager.navigate(CommentsNavigation.commentsScreen(videoId))
     }
 }
