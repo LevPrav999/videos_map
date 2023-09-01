@@ -2,8 +2,10 @@ package ru.levprav.videosmap.data.repository
 
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import ru.levprav.videosmap.data.location.DefaultLocationTracker
 import ru.levprav.videosmap.data.remote.UserApi
 import ru.levprav.videosmap.data.remote.VideoApi
@@ -37,11 +39,11 @@ class VideoRepositoryImpl @Inject constructor(
                 val videoFromDb = videoApi.getVideoById(id)
                 resultVideos.add(videoFromDb!!)
             }
-            emit(Resource.Success(resultVideos))
+            emit(Resource.Success(resultVideos.toList()))
         } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Unknown error"))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun getVideoById(id: String): Flow<Resource<VideoModel>> = flow {
         emit(Resource.Loading())
@@ -51,7 +53,7 @@ class VideoRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Unknown error"))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun getVideosFromUidSnapshots(uid: String): Flow<Resource<List<VideoModel>>> =
         flow {
@@ -65,13 +67,13 @@ class VideoRepositoryImpl @Inject constructor(
                                 videos.add(video.data!!.toVideoModel())
                             }
                         }
-                        emit(Resource.Success(videos))
+                        emit(Resource.Success(videos.toList()))
                     }
                 }
             } catch (e: Exception) {
                 emit(Resource.Error(e.message ?: "Unknown error"))
             }
-        }
+        }.flowOn(Dispatchers.IO)
 
     override suspend fun saveVideo(
         uri: String,
@@ -115,7 +117,7 @@ class VideoRepositoryImpl @Inject constructor(
                 emit(Resource.Error(e.message ?: "Error saving video"))
             }
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun like(videoId: String): Flow<Resource<VideoModel>> = flow {
         emit(Resource.Loading())
@@ -126,7 +128,7 @@ class VideoRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Like error"))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun unlike(videoId: String): Flow<Resource<VideoModel>> = flow {
         emit(Resource.Loading())
@@ -137,7 +139,7 @@ class VideoRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Unlike error"))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun deleteVideo(videoId: String): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading())
@@ -147,17 +149,17 @@ class VideoRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Delete error"))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun searchVideo(text: String): Flow<Resource<List<VideoModel>>> = flow {
         emit(Resource.Loading())
         try {
             val result = videoApi.getVideosByDescriptionContains(text)
-            emit(Resource.Success(result))
+            emit(Resource.Success(result.toList()))
         } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Delete error"))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun shareVideo(videoId: String): Resource<String> {
         TODO("Not yet implemented")
