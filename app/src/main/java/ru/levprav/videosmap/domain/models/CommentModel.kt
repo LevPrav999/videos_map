@@ -24,7 +24,7 @@ fun Map<String, Any?>.toCommentModel(): CommentModel {
     return CommentModel(
         id = this["id"] as String,
         text = this["text"] as String,
-        createdAt = this["createdAt"] as Date,
+        createdAt = this["createdAt"] as? Date ?: Date(),
         videoId = this["videoId"] as String,
         userId = this["userId"] as String
     )
