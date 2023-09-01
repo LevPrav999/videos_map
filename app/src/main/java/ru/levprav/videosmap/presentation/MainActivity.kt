@@ -16,6 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import ru.levprav.videosmap.navigation.CommentsNavigation
 import ru.levprav.videosmap.navigation.DetailsNavigation
 import ru.levprav.videosmap.navigation.NavigationDirections
 import ru.levprav.videosmap.navigation.NavigationManager
@@ -24,6 +25,7 @@ import ru.levprav.videosmap.navigation.PreviewNavigation
 import ru.levprav.videosmap.presentation.auth.AuthPage
 import ru.levprav.videosmap.presentation.camera.VideoDetailsScreen
 import ru.levprav.videosmap.presentation.camera.VideoPreviewScreen
+import ru.levprav.videosmap.presentation.comments.CommentsPage
 import ru.levprav.videosmap.presentation.edituser.EditUserPage
 import ru.levprav.videosmap.presentation.main.TabsPage
 import ru.levprav.videosmap.presentation.splash.SplashScreen
@@ -119,6 +121,21 @@ class MainActivity : ComponentActivity() {
 
                     backStackEntry.arguments?.getString(PlayerNavigation.VIDEO_ID)?.let { it ->
                         VideoPlayer(videoId = it, hiltViewModel())
+                    }
+                }
+
+                composable(PlayerNavigation.route, arguments = PlayerNavigation.arguments)
+                { backStackEntry ->
+
+                    backStackEntry.arguments?.getString(PlayerNavigation.VIDEO_ID)?.let { it ->
+                        VideoPlayer(videoId = it, hiltViewModel())
+                    }
+                }
+                composable(CommentsNavigation.route, arguments = CommentsNavigation.arguments)
+                { backStackEntry ->
+
+                    backStackEntry.arguments?.getString(CommentsNavigation.KEY)?.let { it ->
+                        CommentsPage(videoId = it, hiltViewModel())
                     }
                 }
             }
