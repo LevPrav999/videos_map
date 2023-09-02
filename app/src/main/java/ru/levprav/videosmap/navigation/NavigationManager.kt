@@ -16,4 +16,10 @@ class NavigationManager(private val externalScope: CoroutineScope) {
         }
     }
 
+    fun back() {
+        externalScope.launch {
+            commands.emit(NavigationDirections.back)
+        }
+    }
+
 }
