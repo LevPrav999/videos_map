@@ -72,6 +72,35 @@ class CommentsViewModel @Inject constructor(
         }
     }
 
+    fun postComment(videoId: String) {
+        viewModelScope.launch {
+            repository.post(
+                text = state.commentValue,
+                videoId = videoId,
+                userId = userRepository.getCurrentUserId()!!
+            ).collect { result ->
+                state = when (result) {
+
+                    is Resource.Error -> {
+                        state.copy(isLoading = false, error = result.message)
+                    }
+
+                    is Resource.Success -> {
+                        state.copy(isLoading = false, commentValue = "")
+                    }
+
+                    is Resource.Loading -> {
+                        state.copy(isLoading = true)
+                    }
+                }
+            }
+        }
+    }
+
+    fun onValueChanged(value: String) {
+        state = state.copy(commentValue = value)
+    }
+
     fun popBack() {
         navigationManager.back()
     }
