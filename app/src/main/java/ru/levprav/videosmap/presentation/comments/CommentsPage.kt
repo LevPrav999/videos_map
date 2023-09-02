@@ -168,6 +168,7 @@ fun CommentUserField(modifier: Modifier, viewModel: CommentsViewModel, videoId: 
                 painter = painterResource(id = R.drawable.ic_check),
                 contentDescription = null,
                 modifier = Modifier
+                    .align(Alignment.CenterVertically)
                     .size(36.dp)
                     .border(
                         BorderStroke(width = 1.dp, color = Color.White), shape = CircleShape
