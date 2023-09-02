@@ -81,7 +81,11 @@ class MainActivity : ComponentActivity() {
                         if (command.clearStack) {
                             navController.popBackStack()
                         }
-                        navController.navigate(command.destination)
+                        if (command.destination == "back") {
+                            navController.popBackStack()
+                        } else {
+                            navController.navigate(command.destination)
+                        }
                     }
                 }
             }
