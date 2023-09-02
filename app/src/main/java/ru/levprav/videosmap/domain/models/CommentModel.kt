@@ -1,5 +1,6 @@
 package ru.levprav.videosmap.domain.models
 
+import com.google.firebase.Timestamp
 import java.util.Date
 
 data class CommentModel(
@@ -24,7 +25,7 @@ fun Map<String, Any?>.toCommentModel(): CommentModel {
     return CommentModel(
         id = this["id"] as String,
         text = this["text"] as String,
-        createdAt = this["createdAt"] as? Date ?: Date(),
+        createdAt = (this["createdAt"] as Timestamp).toDate(),
         videoId = this["videoId"] as String,
         userId = this["userId"] as String
     )
