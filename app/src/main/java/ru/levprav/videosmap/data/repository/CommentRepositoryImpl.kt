@@ -31,6 +31,7 @@ class CommentRepositoryImpl @Inject constructor(
                 )
 
                 commentApi.postComment(comment)
+                emit(Resource.Success(Unit))
             }
         }
 
