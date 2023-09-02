@@ -1,10 +1,11 @@
 package ru.levprav.videosmap.presentation.comments
 
 import ru.levprav.videosmap.domain.models.CommentModel
+import ru.levprav.videosmap.domain.models.UserModel
 
 data class CommentsState(
     val comments: List<CommentModel>? = null,
-    val avatars: MutableList<String>? = mutableListOf(),
+    val users: MutableList<UserModel> = mutableListOf(),
 
     val commentValue: String = "",
 
