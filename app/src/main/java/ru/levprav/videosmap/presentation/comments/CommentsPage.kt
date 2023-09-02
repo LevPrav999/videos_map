@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -45,9 +44,7 @@ fun CommentsPage(
     viewModel: CommentsViewModel
 ) {
     LaunchedEffect(Unit) {
-        if (viewModel.state.comments == null) {
-            viewModel.loadComments(videoId)
-        }
+        viewModel.loadComments(videoId)
     }
     if (viewModel.state.isLoading) {
         CircularProgressIndicator()
@@ -73,18 +70,16 @@ fun CommentsPage(
                     modifier = Modifier
                         .align(Alignment.TopStart)
                         .clickable {
-                            // viewModel.onClickBack()
+                            viewModel.popBack()
                         }
                 )
             }
 
             Spacer(modifier = Modifier.height(6.dp))
 
-            // Используем Box с весами для размещения списка и поля ввода
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(0.85f) // Устанавливаем вес для списка комментариев
+            // Используем Column с весами для размещения списка и поля ввода
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
                 LazyColumn(
                     contentPadding = PaddingValues(top = 4.dp),
@@ -97,12 +92,11 @@ fun CommentsPage(
                 }
             }
 
-            // Поле для ввода текста
+            // CommentUserField всегда внизу экрана
             CommentUserField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.15f) // Устанавливаем вес для поля ввода
-                    .background(Color.Red)
+                modifier = Modifier.fillMaxWidth(),
+                viewModel = viewModel,
+                videoId = videoId
             )
         }
     }
@@ -140,37 +134,48 @@ fun CommentItem(item: CommentModel, viewModel: CommentsViewModel) {
 }
 
 @Composable
-fun CommentUserField(modifier: Modifier) {
+fun CommentUserField(modifier: Modifier, viewModel: CommentsViewModel, videoId: String) {
     Box(
         modifier = modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .shadow(elevation = (0.4).dp)
+            .padding(5.dp)
     ) {
-        Column(
-            modifier = modifier
-                .align(Alignment.BottomCenter)
+        Row(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-
-                OutlinedTextField(
-                    value = "",
-                    onValueChange = {},
-                    shape = RoundedCornerShape(36.dp),
-                    placeholder = {
-                        Text(text = "Write here")
-                    },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = Color.Gray,
-                        unfocusedContainerColor = Color.Gray,
-                        disabledContainerColor = Color.Gray,
-                        unfocusedBorderColor = Color.Transparent,
-                    ),
-
+            OutlinedTextField(
+                value = viewModel.state.commentValue,
+                onValueChange = {
+                    viewModel.onValueChanged(it)
+                },
+                shape = RoundedCornerShape(36.dp),
+                placeholder = {
+                    Text(text = "Write here")
+                },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Color.Gray,
+                    unfocusedContainerColor = Color.Gray,
+                    disabledContainerColor = Color.Gray,
+                    unfocusedBorderColor = Color.Transparent,
+                ),
+                modifier = Modifier.weight(1f)
+            )
+            Icon(
+                painter = painterResource(id = R.drawable.ic_check),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(36.dp)
+                    .border(
+                        BorderStroke(width = 1.dp, color = Color.White), shape = CircleShape
                     )
-            }
+                    .clip(shape = CircleShape)
+                    .background(Color.Gray)
+                    .clickable {
+                        viewModel.postComment(videoId = videoId)
+                    }
+                    .padding(10.dp)
+            )
         }
     }
-
 }
