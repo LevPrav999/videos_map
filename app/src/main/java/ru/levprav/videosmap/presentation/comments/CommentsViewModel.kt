@@ -71,4 +71,8 @@ class CommentsViewModel @Inject constructor(
             state = state.copy(isLoading = false)
         }
     }
+
+    fun popBack() {
+        navigationManager.back()
+    }
 }
