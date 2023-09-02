@@ -105,32 +105,35 @@ fun CommentsPage(
 @Composable
 fun CommentItem(item: CommentModel, viewModel: CommentsViewModel) {
     val index = viewModel.state.comments?.indexOf(item) ?: -1
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(6.dp)
-    ) {
-        Row {
-            AsyncImage(
-                model = viewModel.state.avatars?.get(index), contentDescription = null,
-                modifier = Modifier
-                    .size(50.dp)
-                    .border(
-                        BorderStroke(width = 1.dp, color = Color.White), shape = CircleShape
-                    )
-                    .clip(shape = CircleShape),
-                contentScale = ContentScale.Crop
-            )
+    if (index < viewModel.state.users.size) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(6.dp)
+        ) {
+            Row {
+                AsyncImage(
+                    model = viewModel.state.users[index].imageUrl, contentDescription = null,
+                    modifier = Modifier
+                        .size(50.dp)
+                        .border(
+                            BorderStroke(width = 1.dp, color = Color.White), shape = CircleShape
+                        )
+                        .clip(shape = CircleShape),
+                    contentScale = ContentScale.Crop
+                )
 
-            Text(
-                item.text,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(3.dp)
-            )
+                Text(
+                    viewModel.state.users[index].name,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(3.dp)
+                )
+            }
+            Text(item.text, style = MaterialTheme.typography.titleSmall)
         }
-        Text(item.createdAt.toString(), style = MaterialTheme.typography.titleSmall)
+        Spacer(modifier = Modifier.height(10.dp))
     }
-    Spacer(modifier = Modifier.height(10.dp))
+
 }
 
 @Composable
