@@ -57,10 +57,10 @@ class CommentsViewModel @Inject constructor(
                         }
 
                         is Resource.Success -> {
-                            val array = state.avatars!!
-                            array.add(result.data!!.imageUrl)
+                            val array = state.users
+                            array.add(result.data!!)
                             state = state.copy(
-                                avatars = array,
+                                users = array,
                             )
                         }
 
