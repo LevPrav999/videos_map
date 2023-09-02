@@ -10,7 +10,17 @@ object NavigationDirections {
 
         override val destination = ""
 
-        override val clearStack = true
+        override val clearStack = false
+
+    }
+
+    val back = object : NavigationCommand {
+
+        override val arguments = emptyList<NamedNavArgument>()
+
+        override val destination = "back"
+
+        override val clearStack = false
 
     }
 
