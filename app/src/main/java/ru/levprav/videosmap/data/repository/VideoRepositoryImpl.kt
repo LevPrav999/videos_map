@@ -173,8 +173,14 @@ class VideoRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override suspend fun getNewVideos(): Resource<List<VideoModel>> {
-        TODO("Not yet implemented")
+    override suspend fun getNewVideos(): Flow<Resource<List<VideoModel>>> = flow {
+        emit(Resource.Loading())
+        try {
+            val result = videoApi.getNewVideos()
+            emit(Resource.Success(result))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Delete error"))
+        }
     }
 
 }
