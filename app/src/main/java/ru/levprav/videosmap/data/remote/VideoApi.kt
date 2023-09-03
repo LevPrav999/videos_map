@@ -184,7 +184,8 @@ class VideoApi @Inject constructor() {
 
     suspend fun getVideosByDescriptionContains(text: String) = withContext(Dispatchers.IO) {
         suspendCoroutine { continuation ->
-            _firebaseFirestore.collection("videos").whereEqualTo("description", text).get()
+            _firebaseFirestore.collection("videos")
+                .whereArrayContains("descriptionArray", text.lowercase()).get()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         if (task.result.documents.size != 0) {
