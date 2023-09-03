@@ -155,6 +155,33 @@ class VideoApi @Inject constructor() {
         _firebaseFirestore.collection("videos").document(videoId).delete()
     }
 
+    suspend fun getNewVideos() = withContext(Dispatchers.IO) {
+
+        suspendCoroutine { continuation ->
+            _firebaseFirestore.collection("videos").orderBy("createdAt").get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        if (task.result.documents.size != 0) {
+                            val videos = mutableListOf<VideoModel>()
+                            for (video in task.result.documents) {
+                                videos.add(video.data!!.toVideoModel())
+                            }
+                            continuation.resume(videos)
+                        } else {
+                            continuation.resumeWithException(
+                                Exception("Videos data not found")
+                            )
+                        }
+                    } else {
+                        continuation.resumeWithException(
+                            task.exception ?: Exception("Error checking video documents")
+                        )
+                    }
+                }
+
+        }
+    }
+
     suspend fun getVideosByDescriptionContains(text: String) = withContext(Dispatchers.IO) {
         suspendCoroutine { continuation ->
             _firebaseFirestore.collection("videos").whereEqualTo("description", text).get()
