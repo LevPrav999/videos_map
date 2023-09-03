@@ -86,6 +86,11 @@ class UserApi @Inject constructor() {
         _firebaseFirestore.collection("users").document(getCurrentUserId()!!).snapshots()
     }
 
+    suspend fun getUserSnapshotsById(uid: String): Flow<DocumentSnapshot> =
+        withContext(Dispatchers.IO) {
+            _firebaseFirestore.collection("users").document(uid).snapshots()
+        }
+
     suspend fun saveUserAvatar(storagePath: String, image: Uri): String =
         withContext(Dispatchers.IO) {
             val storageReference = _firebaseStorage.reference
