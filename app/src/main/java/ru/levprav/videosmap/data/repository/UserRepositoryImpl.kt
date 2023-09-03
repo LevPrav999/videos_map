@@ -89,6 +89,20 @@ class UserRepositoryImpl @Inject constructor(
 
     }.flowOn(Dispatchers.IO)
 
+    override suspend fun getProfileDetailSnapshots(targetUid: String): Flow<Resource<UserModel>> =
+        flow {
+            emit(Resource.Loading())
+            try {
+                api.getUserSnapshotsById(targetUid).collect { snapshot ->
+                    if (snapshot.exists() && snapshot.data != null) {
+                        emit(Resource.Success(snapshot.data?.toUserModel()))
+                    }
+                }
+            } catch (e: Exception) {
+                emit(Resource.Error(e.message ?: "Unknown error"))
+            }
+        }.flowOn(Dispatchers.IO)
+
     override suspend fun saveProfile(
         name: String?,
         description: String?,
