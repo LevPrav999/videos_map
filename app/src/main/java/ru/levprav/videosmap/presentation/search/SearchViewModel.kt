@@ -62,7 +62,7 @@ class SearchViewModel @Inject constructor(
                         }
 
                         is Resource.Error -> {
-                            state.copy(isLoading = false, error = result.message)
+                            state.copy(isLoading = false, data = listOf())
                         }
 
                         is Resource.Success -> {
