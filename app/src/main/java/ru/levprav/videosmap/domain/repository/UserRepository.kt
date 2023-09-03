@@ -19,6 +19,8 @@ interface UserRepository {
 
     suspend fun getProfileDetail(targetUid: String): Flow<Resource<UserModel>>
 
+    suspend fun getProfileDetailSnapshots(targetUid: String): Flow<Resource<UserModel>>
+
     suspend fun saveProfile(
         name: String?,
         description: String?,
