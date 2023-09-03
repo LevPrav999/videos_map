@@ -164,7 +164,7 @@ fun VideoPlayer(
                             viewModel.navigateToComments(videoId)
                         },
                         onClickUser = {
-                            //viewModel.navigateToUser()
+                            viewModel.navigateToUser(userId = viewModel.state.user!!.id)
                         },
                         onClickShare = {
                             context.share(
