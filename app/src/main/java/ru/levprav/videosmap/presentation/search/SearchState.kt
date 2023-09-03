@@ -7,5 +7,5 @@ data class SearchState(
     val isLoading: Boolean = false,
     val error: String? = null,
 
-    val textFieldValue: String? = null,
+    val textFieldValue: String = "",
 )
