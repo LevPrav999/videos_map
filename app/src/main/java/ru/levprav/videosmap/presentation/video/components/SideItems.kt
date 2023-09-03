@@ -42,9 +42,9 @@ fun SideItems(
 
     val context = LocalContext.current
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        viewModel.state.avatar?.let {
+        viewModel.state.user?.let {
             AsyncImage(
-                model = it,
+                model = it.imageUrl,
                 contentDescription = null,
                 modifier = Modifier
                     .size(50.dp)
