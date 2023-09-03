@@ -16,12 +16,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import ru.levprav.videosmap.navigation.AnotherProfileDestination
 import ru.levprav.videosmap.navigation.CommentsNavigation
 import ru.levprav.videosmap.navigation.DetailsNavigation
 import ru.levprav.videosmap.navigation.NavigationDirections
 import ru.levprav.videosmap.navigation.NavigationManager
 import ru.levprav.videosmap.navigation.PlayerNavigation
 import ru.levprav.videosmap.navigation.PreviewNavigation
+import ru.levprav.videosmap.presentation.anotherProfile.AnotherProfilePage
 import ru.levprav.videosmap.presentation.auth.AuthPage
 import ru.levprav.videosmap.presentation.camera.VideoDetailsScreen
 import ru.levprav.videosmap.presentation.camera.VideoPreviewScreen
@@ -140,6 +142,17 @@ class MainActivity : ComponentActivity() {
 
                     backStackEntry.arguments?.getString(CommentsNavigation.KEY)?.let { it ->
                         CommentsPage(videoId = it, hiltViewModel())
+                    }
+                }
+
+                composable(
+                    AnotherProfileDestination.route,
+                    arguments = AnotherProfileDestination.arguments
+                )
+                { backStackEntry ->
+
+                    backStackEntry.arguments?.getString(AnotherProfileDestination.KEY)?.let { it ->
+                        AnotherProfilePage(userId = it, hiltViewModel())
                     }
                 }
             }
