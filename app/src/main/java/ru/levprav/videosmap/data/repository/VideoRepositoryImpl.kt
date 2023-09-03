@@ -104,6 +104,9 @@ class VideoRepositoryImpl @Inject constructor(
                     imageUrl = thumbnailUrl,
                     createdAt = Date(),
                     description = description,
+                    descriptionArray = description.split(" ").map { element ->
+                        element.lowercase()
+                    },
                     userId = userApi.getCurrentUserId()!!,
                     position = location,
                     commentCount = 0,
