@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import ru.levprav.videosmap.domain.repository.UserRepository
 import ru.levprav.videosmap.domain.repository.VideoRepository
 import ru.levprav.videosmap.domain.util.Resource
+import ru.levprav.videosmap.navigation.AnotherProfileDestination
 import ru.levprav.videosmap.navigation.CommentsNavigation
 import ru.levprav.videosmap.navigation.NavigationManager
 import javax.inject.Inject
@@ -64,7 +65,7 @@ class VideoPlayerViewModel @Inject constructor(
 
                     is Resource.Success -> {
                         state.copy(
-                            avatar = result.data!!.imageUrl
+                            user = result.data!!
                         )
                     }
                 }
@@ -160,5 +161,9 @@ class VideoPlayerViewModel @Inject constructor(
 
     fun navigateToComments(videoId: String) {
         navigationManager.navigate(CommentsNavigation.commentsScreen(videoId))
+    }
+
+    fun navigateToUser(userId: String) {
+        navigationManager.navigate(AnotherProfileDestination.anotherProfileScreen(userId))
     }
 }
