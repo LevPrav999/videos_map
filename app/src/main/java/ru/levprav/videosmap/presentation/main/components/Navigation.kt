@@ -11,6 +11,7 @@ import ru.levprav.videosmap.navigation.TabsDirections
 import ru.levprav.videosmap.presentation.camera.VideoCaptureScreen
 import ru.levprav.videosmap.presentation.main.EmptyScreen
 import ru.levprav.videosmap.presentation.profile.ProfilePage
+import ru.levprav.videosmap.presentation.search.SearchPage
 
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
@@ -20,7 +21,7 @@ fun Navigation(navController: NavHostController) {
             EmptyScreen()
         }
         composable(TabsDirections.search.destination) {
-            EmptyScreen()
+            SearchPage(hiltViewModel())
         }
         composable(TabsDirections.add.destination) {
             VideoCaptureScreen(hiltViewModel())
