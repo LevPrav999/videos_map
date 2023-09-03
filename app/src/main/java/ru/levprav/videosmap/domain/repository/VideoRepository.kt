@@ -32,6 +32,6 @@ interface VideoRepository {
     suspend fun shareVideo(videoId: String): Resource<String>
     suspend fun getVideoFile(): Resource<File>
     suspend fun getVideoLocation(videoPath: String): Resource<LatLng>
-    suspend fun getNewVideos(): Resource<List<VideoModel>>
+    suspend fun getNewVideos(): Flow<Resource<List<VideoModel>>>
 
 }
