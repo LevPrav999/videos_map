@@ -10,6 +10,7 @@ data class VideoModel(
     val thumbnailUrl: String, // URL of the thumbnail of the first frame of the video
     val createdAt: Date, // Timestamp of when the video was posted
     val description: String, // Text description of the video. Used to perform keyword search as well
+    val descriptionArray: List<String>, // List of description words
     val userId: String, // ID of the user who have posted the video
     val position: LatLng, // Coordinates of the position of the video
     val commentCount: Int, // Video comments count
@@ -24,6 +25,7 @@ fun VideoModel.toMap(): Map<String, Any?> {
         "thumbnailUrl" to thumbnailUrl,
         "createdAt" to createdAt,
         "description" to description,
+        "descriptionArray" to description,
         "userId" to userId,
         "position" to mapOf(
             "latitude" to position.latitude,
@@ -49,6 +51,7 @@ fun Map<String, Any?>.toVideoModel(): VideoModel {
         thumbnailUrl = this["thumbnailUrl"] as? String ?: "",
         createdAt = this["createdAt"] as? Date ?: Date(),
         description = this["description"] as? String ?: "",
+        descriptionArray = (this["descriptionArray"] as List<*>).map { it as String },
         userId = this["userId"] as? String ?: "",
         position = position,
         commentCount = this["commentCount"] as? Int ?: 0,
