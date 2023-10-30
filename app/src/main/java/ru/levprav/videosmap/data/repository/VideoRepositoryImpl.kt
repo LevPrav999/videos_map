@@ -86,10 +86,10 @@ class VideoRepositoryImpl @Inject constructor(
             emit(Resource.Error("Location not found"))
         } else {
             val time = System.currentTimeMillis()
-            val videoPath = userApi.getCurrentUserId() + "/${time}.${
+            val videoPath = userApi.userId!! + "/${time}.${
                 uri.split(".").last()
             }"
-            val imagePath = userApi.getCurrentUserId() + "/image-${time}.${
+            val imagePath = userApi.userId!! + "/image-${time}.${
                 uri.split(".").last()
             }"
 
@@ -107,7 +107,7 @@ class VideoRepositoryImpl @Inject constructor(
                     descriptionArray = description.split(" ").map { element ->
                         element.lowercase()
                     },
-                    userId = userApi.getCurrentUserId()!!,
+                    userId = userApi.userId!!,
                     position = location,
                     commentCount = 0,
                     liked = listOf()
@@ -125,7 +125,7 @@ class VideoRepositoryImpl @Inject constructor(
     override suspend fun like(videoId: String): Flow<Resource<VideoModel>> = flow {
         emit(Resource.Loading())
         try {
-            videoApi.like(videoId, userApi.getCurrentUserId()!!)
+            videoApi.like(videoId, userApi.userId!!)
             val video = videoApi.getVideoById(videoId)
             emit(Resource.Success(video!!))
         } catch (e: Exception) {
@@ -136,7 +136,7 @@ class VideoRepositoryImpl @Inject constructor(
     override suspend fun unlike(videoId: String): Flow<Resource<VideoModel>> = flow {
         emit(Resource.Loading())
         try {
-            videoApi.unlike(videoId, userApi.getCurrentUserId()!!)
+            videoApi.unlike(videoId, userApi.userId!!)
             val video = videoApi.getVideoById(videoId)
             emit(Resource.Success(video!!))
         } catch (e: Exception) {
