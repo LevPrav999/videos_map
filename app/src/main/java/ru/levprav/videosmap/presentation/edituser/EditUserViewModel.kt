@@ -1,5 +1,7 @@
 package ru.levprav.videosmap.presentation.edituser
 
+import FileUtils
+import android.content.Context
 import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,8 +56,9 @@ class EditUserViewModel @Inject constructor(
         }
     }
 
-    fun getAvatar(avatar: Uri) {
-        val data = state.data.copy(imageUrl = avatar)
+    fun getAvatar(context: Context, avatar: Uri) {
+        val filePath = FileUtils.getPath(context, avatar)
+        val data = state.data.copy(imageUrl = filePath, imagePathUri = avatar)
         state = state.copy(data = data, isFromNetwork = false)
     }
 
