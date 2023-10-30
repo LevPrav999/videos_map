@@ -57,7 +57,7 @@ class ProfilePageViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            userRepository.getMyProfile().collect{ result ->
+            userRepository.getMyProfile().collect { result ->
                 state = when (result) {
                     is Resource.Loading -> {
                         state.copy(isLoading = true)

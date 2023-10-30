@@ -1,6 +1,8 @@
 package ru.levprav.videosmap.presentation.main
 
 import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Notifications
@@ -14,6 +16,7 @@ import ru.levprav.videosmap.presentation.main.components.BottomNavigationBar
 import ru.levprav.videosmap.presentation.main.components.Navigation
 
 
+@RequiresApi(Build.VERSION_CODES.P)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TabsPage() {

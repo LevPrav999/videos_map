@@ -12,7 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 @Composable
 fun SplashScreen(viewModel: SplashViewModel) {
     val context = LocalContext.current
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         viewModel.initAppwrite(context)
     }
     Column(modifier = Modifier.fillMaxSize()) {

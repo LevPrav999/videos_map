@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -61,13 +60,12 @@ class AuthViewModel @Inject constructor(
                         is Resource.Success -> {
                             repository.init(context)
                             state = state.copy(isLoading = false, error = null, data = null)
-                            repository.getMyProfile().collect{
-                                resultS->
-                                    if(resultS.data != null){
-                                        navigationManager.navigate(NavigationDirections.mainScreen)
-                                    }else{
-                                        navigationManager.navigate(NavigationDirections.editUser)
-                                    }
+                            repository.getMyProfile().collect { resultS ->
+                                if (resultS.data != null) {
+                                    navigationManager.navigate(NavigationDirections.mainScreen)
+                                } else {
+                                    navigationManager.navigate(NavigationDirections.editUser)
+                                }
                             }
 
                         }

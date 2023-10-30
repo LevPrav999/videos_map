@@ -1,45 +1,26 @@
 package ru.levprav.videosmap.data.remote
 
 import android.content.Context
-import android.net.Uri
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.MutableLiveData
-import com.google.android.gms.tasks.Tasks
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.snapshots
-import com.google.firebase.storage.FirebaseStorage
 import io.appwrite.Client
+import io.appwrite.ID
+import io.appwrite.Query
+import io.appwrite.models.InputFile
+import io.appwrite.models.Session
 import io.appwrite.services.Account
+import io.appwrite.services.Databases
+import io.appwrite.services.Realtime
+import io.appwrite.services.Storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import ru.levprav.videosmap.domain.models.UserModel
 import ru.levprav.videosmap.domain.models.toMap
 import ru.levprav.videosmap.domain.models.toUserModel
 import javax.inject.Inject
 import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
-import io.appwrite.ID
-import io.appwrite.Query
-import io.appwrite.models.File
-import io.appwrite.models.InputFile
-import io.appwrite.models.RealtimeResponseEvent
-import io.appwrite.models.RealtimeSubscription
-import io.appwrite.models.Session
-import io.appwrite.services.Databases
-import io.appwrite.services.Realtime
-import io.appwrite.services.Storage
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import ru.levprav.videosmap.domain.util.Resource
 
 class UserApi @Inject constructor() {
 
@@ -51,7 +32,6 @@ class UserApi @Inject constructor() {
     lateinit var storage: Storage
 
     var userId: String? = null
-
 
 
     suspend fun init(context: Context) {
@@ -95,10 +75,10 @@ class UserApi @Inject constructor() {
     }
 
     suspend fun getUserDocumentById(uid: String): UserModel? = withContext(Dispatchers.IO) {
-        try{
+        try {
             val user = databases.getDocument("1", "users", uid)
             return@withContext user.data.toUserModel()
-        }catch (e: Exception){
+        } catch (e: Exception) {
             return@withContext null
         }
 
@@ -106,7 +86,7 @@ class UserApi @Inject constructor() {
 
 
     private var userFlow: MutableStateFlow<UserModel?> = MutableStateFlow(null)
-    suspend fun getUserSnapshots(): Flow<UserModel?>{
+    suspend fun getUserSnapshots(): Flow<UserModel?> {
         realtime.subscribe("databases.1.collections.users.documents.$userId") { event ->
             if (event.events.contains("databases.1.collections.users.documents.$userId.update")) {
                 val userModel = (event.payload as Map<String, Any>).toUserModel()
@@ -114,15 +94,15 @@ class UserApi @Inject constructor() {
             }
         }
 
-       return userFlow.asStateFlow()
+        return userFlow.asStateFlow()
     }
 
 
     suspend fun getUserSnapshotsById(uid: String): UserModel =
         withContext(Dispatchers.IO) {
             suspendCoroutine { continuation ->
-                realtime.subscribe("databases.1.collections.users.documents.${uid}", callback={
-                    if (it.events.contains("databases.1.collections.users.documents.${uid}.update")){
+                realtime.subscribe("databases.1.collections.users.documents.${uid}", callback = {
+                    if (it.events.contains("databases.1.collections.users.documents.${uid}.update")) {
                         continuation.resume((it.payload as Map<String, Any>).toUserModel())
                     }
                 }
@@ -144,10 +124,10 @@ class UserApi @Inject constructor() {
 
 
     suspend fun checkUserDocumentExists(uid: String): Boolean = withContext(Dispatchers.IO) {
-        try{
+        try {
             databases.getDocument("1", "users", uid)
             return@withContext true
-        }catch (e: Exception){
+        } catch (e: Exception) {
             return@withContext false
         }
 
@@ -205,12 +185,12 @@ class UserApi @Inject constructor() {
 
     }
 
-    private suspend fun getCurrentUserId(): String?{
-        try{
+    private suspend fun getCurrentUserId(): String? {
+        try {
             val user = account.get()
             return user.id
-        }catch (e: Exception){
-            return null;
+        } catch (e: Exception) {
+            return null
         }
     }
 }

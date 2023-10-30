@@ -1,7 +1,6 @@
 package ru.levprav.videosmap.data.repository
 
 import android.content.Context
-import android.net.Uri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -186,7 +185,7 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun getCurrentUserSnapshots(): Flow<Resource<UserModel>> = flow {
         emit(Resource.Loading())
         try {
-            api.getUserSnapshots().collect{
+            api.getUserSnapshots().collect {
                 emit(Resource.Success(it))
             }
         } catch (e: Exception) {
