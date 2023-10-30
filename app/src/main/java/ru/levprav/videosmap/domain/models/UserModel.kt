@@ -30,6 +30,6 @@ fun Map<String, Any>.toUserModel(): UserModel {
         imageUrl = this["imageUrl"].toString(),
         followers = (this["followers"] as List<*>).map { it as String },
         following = (this["following"] as List<*>).map { it as String },
-        likeCount = this["likeCount"].toString().toInt()
+        likeCount = this["likeCount"].toString().toFloat().toInt()
     )
 }
