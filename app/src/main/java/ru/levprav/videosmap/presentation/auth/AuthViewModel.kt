@@ -1,8 +1,10 @@
 package ru.levprav.videosmap.presentation.auth
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,10 +24,9 @@ class AuthViewModel @Inject constructor(
     var state by mutableStateOf(AuthState())
         private set
 
-    fun signUp(email: String, password: String, passwordConfirm: String) {
+    fun signUp(email: String, password: String, passwordConfirm: String, context: Context) {
         viewModelScope.launch {
             state = state.copy(isLoading = true)
-
             repository.signUp(email, password, passwordConfirm)
                 .collect { result ->
                     when (result) {
@@ -35,7 +36,8 @@ class AuthViewModel @Inject constructor(
 
                         is Resource.Success -> {
                             state = state.copy(isLoading = false, error = null)
-                            navigationManager.navigate(NavigationDirections.editUser)
+                            repository.init(context)
+                            navigationManager.navigate(NavigationDirections.authentication)
                         }
 
                         else -> {
@@ -46,10 +48,9 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun signIn(email: String, password: String) {
+    fun signIn(email: String, password: String, context: Context) {
         viewModelScope.launch {
             state = state.copy(isLoading = true)
-
             repository.signIn(email, password)
                 .collect { result ->
                     when (result) {
@@ -58,8 +59,16 @@ class AuthViewModel @Inject constructor(
                         }
 
                         is Resource.Success -> {
+                            repository.init(context)
                             state = state.copy(isLoading = false, error = null, data = null)
-                            navigationManager.navigate(NavigationDirections.editUser)
+                            repository.getMyProfile().collect{
+                                resultS->
+                                    if(resultS.data != null){
+                                        navigationManager.navigate(NavigationDirections.mainScreen)
+                                    }else{
+                                        navigationManager.navigate(NavigationDirections.editUser)
+                                    }
+                            }
 
                         }
 
