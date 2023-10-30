@@ -1,5 +1,7 @@
 package ru.levprav.videosmap.presentation.splash
 
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,20 +17,15 @@ class SplashViewModel @Inject constructor(
     private val repository: UserRepository,
     private val navigationManager: NavigationManager
 ) : ViewModel() {
-    init {
+
+    fun initAppwrite(context: Context){
         viewModelScope.launch {
-            repository.getMyProfile().collect { result ->
-                when (result) {
-                    is Resource.Error -> {
-                        navigationManager.navigate(NavigationDirections.authentication)
-                    }
+            repository.init(context)
 
-                    is Resource.Success -> {
-                        navigationManager.navigate(NavigationDirections.mainScreen)
-                    }
-
-                    else -> {}
-                }
+            if(repository.getCurrentUserId() != null){
+                navigationManager.navigate(NavigationDirections.mainScreen)
+            }else{
+                navigationManager.navigate(NavigationDirections.authentication)
             }
         }
     }
