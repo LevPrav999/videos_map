@@ -21,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import ru.levprav.videosmap.presentation.edituser.components.Avatar
 import ru.levprav.videosmap.presentation.edituser.components.Field
@@ -29,12 +30,14 @@ import ru.levprav.videosmap.presentation.edituser.components.Field
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun EditUserPage(viewModel: EditUserViewModel) {
+
+    val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
         contract =
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-            viewModel.getAvatar(it)
+            viewModel.getAvatar(context, it)
         }
     }
 
@@ -55,7 +58,7 @@ fun EditUserPage(viewModel: EditUserViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Avatar(
-            viewModel.state.data.imageUrl,
+            viewModel.state.data.imagePathUri,
             viewModel.state.data.imageUrlNetwork,
             viewModel.state.isFromNetwork
         ) {
