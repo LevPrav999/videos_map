@@ -1,5 +1,6 @@
 package ru.levprav.videosmap.data.repository
 
+import android.content.Context
 import android.net.Uri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -7,7 +8,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import ru.levprav.videosmap.data.remote.UserApi
 import ru.levprav.videosmap.domain.models.UserModel
-import ru.levprav.videosmap.domain.models.toUserModel
 import ru.levprav.videosmap.domain.repository.UserRepository
 import ru.levprav.videosmap.domain.util.Resource
 import javax.inject.Inject
@@ -15,6 +15,10 @@ import javax.inject.Inject
 class UserRepositoryImpl @Inject constructor(
     private val api: UserApi
 ) : UserRepository {
+
+    override suspend fun init(context: Context) {
+        api.init(context)
+    }
 
     override suspend fun signUp(
         email: String,
@@ -30,16 +34,11 @@ class UserRepositoryImpl @Inject constructor(
         } else if (password != passwordConfirm) {
             emit(Resource.Error("Passwords don't match"))
         } else {
-            val isUserExists = api.checkUserAuth(email)
-            if (isUserExists) {
-                emit(Resource.Error("User with this Email already exists"))
-            } else {
-                try {
-                    api.signUp(email, password)
-                    emit(Resource.Success(Unit))
-                } catch (e: Exception) {
-                    emit(Resource.Error(e.message ?: "Unknown error"))
-                }
+            try {
+                api.signUp(email, password)
+                emit(Resource.Success(Unit))
+            } catch (e: Exception) {
+                emit(Resource.Error(e.message ?: "Unknown error"))
             }
         }
     }.flowOn(Dispatchers.IO)
@@ -52,27 +51,19 @@ class UserRepositoryImpl @Inject constructor(
         } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             emit(Resource.Error("Incorrect Email format"))
         } else {
-            val isUserExists = api.checkUserAuth(email)
-            if (!isUserExists) {
-                emit(Resource.Error("User with this Email doesn't exists"))
-            } else {
-                try {
-                    val user = api.signIn(email, password)
-                    if (user != null) {
-                        emit(Resource.Success(Unit))
-                    } else {
-                        emit(Resource.Error("Wrong password"))
-                    }
-                } catch (e: Exception) {
-                    emit(Resource.Error(e.message ?: "Unknown error"))
-                }
+            try {
+                api.signIn(email, password)
+                emit(Resource.Success(Unit))
+
+            } catch (e: Exception) {
+                emit(Resource.Error(e.message ?: "Unknown error"))
             }
         }
     }.flowOn(Dispatchers.IO)
 
     override suspend fun getMyProfile(): Flow<Resource<UserModel>> = flow {
         emit(Resource.Loading())
-        api.getCurrentUserId()?.let {
+        api.userId?.let {
             val result = api.getUserDocumentById(it)
             emit(Resource.Success(result))
         } ?: emit(Resource.Error("User not found"))
@@ -93,11 +84,8 @@ class UserRepositoryImpl @Inject constructor(
         flow {
             emit(Resource.Loading())
             try {
-                api.getUserSnapshotsById(targetUid).collect { snapshot ->
-                    if (snapshot.exists() && snapshot.data != null) {
-                        emit(Resource.Success(snapshot.data?.toUserModel()))
-                    }
-                }
+                val user = api.getUserSnapshotsById(targetUid)
+                emit(Resource.Success(user))
             } catch (e: Exception) {
                 emit(Resource.Error(e.message ?: "Unknown error"))
             }
@@ -106,7 +94,7 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun saveProfile(
         name: String?,
         description: String?,
-        localUri: Uri?,
+        localUri: String?,
         networkUrl: String?,
         isFollowing: Boolean?,
         followers: List<String>?,
@@ -114,13 +102,13 @@ class UserRepositoryImpl @Inject constructor(
         likeCount: Int?
     ): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading())
-        val id = api.getCurrentUserId()!!
+        val id = api.userId!!
         if (api.checkUserDocumentExists(id)) {
 
-            val oldUser = api.getUserDocumentById(id)
+            val oldUser = api.getUserDocumentById(id)!!
 
             val avatar = if (localUri != null && networkUrl == null) {
-                api.saveUserAvatar("profilePictures/$id", localUri)
+                api.saveUserAvatar(localUri)
             } else if (localUri == null && networkUrl != null) {
                 networkUrl
             } else {
@@ -139,7 +127,7 @@ class UserRepositoryImpl @Inject constructor(
             api.updateUserDocument(user)
 
         } else {
-            val avatar = api.saveUserAvatar("profilePictures/$id", localUri!!)
+            val avatar = api.saveUserAvatar(localUri!!)
 
             val user = UserModel(
                 id = id,
@@ -198,16 +186,14 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun getCurrentUserSnapshots(): Flow<Resource<UserModel>> = flow {
         emit(Resource.Loading())
         try {
-            api.getUserSnapshots().collect { snapshot ->
-                if (snapshot.exists() && snapshot.data != null) {
-                    emit(Resource.Success(snapshot.data?.toUserModel()))
-                }
+            api.getUserSnapshots().collect{
+                emit(Resource.Success(it))
             }
         } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Unknown error"))
         }
     }.flowOn(Dispatchers.IO)
 
-    override fun getCurrentUserId() = api.getCurrentUserId()
+    override fun getCurrentUserId() = api.userId
 
 }
