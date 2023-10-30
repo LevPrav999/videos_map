@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import ru.levprav.videosmap.presentation.auth.components.AuthDialog
 import ru.levprav.videosmap.presentation.auth.components.ChoiceDialog
@@ -17,6 +18,8 @@ fun AuthPage(viewModel: AuthViewModel) {
 
 
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    val context = LocalContext.current
 
     val snackbarHostState = remember { SnackbarHostState() }
     LaunchedEffect(viewModel.state) {
@@ -54,7 +57,7 @@ fun AuthPage(viewModel: AuthViewModel) {
                             viewModel.state.data?.passwordConfirm?.let { it2 ->
                                 viewModel.signUp(
                                     it,
-                                    it1, it2
+                                    it1, it2, context
                                 )
                             }
                         }
@@ -65,7 +68,7 @@ fun AuthPage(viewModel: AuthViewModel) {
                         viewModel.state.data?.password?.let { it1 ->
                             viewModel.signIn(
                                 it,
-                                it1
+                                it1, context
                             )
                         }
                     }
