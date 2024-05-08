@@ -1,13 +1,12 @@
 package ru.levprav.videosmap.domain.repository
 
-import android.content.Context
+import android.net.Uri
 import kotlinx.coroutines.flow.Flow
 import ru.levprav.videosmap.domain.models.UserModel
 import ru.levprav.videosmap.domain.util.Resource
 
 interface UserRepository {
 
-    suspend fun init(context: Context)
 
     suspend fun signUp(
         email: String,
@@ -26,7 +25,7 @@ interface UserRepository {
     suspend fun saveProfile(
         name: String?,
         description: String?,
-        localUri: String?,
+        localUri: Uri?,
         networkUrl: String?,
         isFollowing: Boolean?,
         followers: List<String>?,
