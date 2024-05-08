@@ -1,196 +1,228 @@
 package ru.levprav.videosmap.data.remote
 
-import android.content.Context
-import io.appwrite.Client
-import io.appwrite.ID
-import io.appwrite.Query
-import io.appwrite.models.InputFile
-import io.appwrite.models.Session
-import io.appwrite.services.Account
-import io.appwrite.services.Databases
-import io.appwrite.services.Realtime
-import io.appwrite.services.Storage
+import android.net.Uri
+import com.google.android.gms.tasks.Tasks
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.snapshots
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import ru.levprav.videosmap.domain.models.UserModel
 import ru.levprav.videosmap.domain.models.toMap
 import ru.levprav.videosmap.domain.models.toUserModel
 import javax.inject.Inject
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 class UserApi @Inject constructor() {
 
 
-    lateinit var client: Client
-    lateinit var account: Account
-    lateinit var databases: Databases
-    lateinit var realtime: Realtime
-    lateinit var storage: Storage
-
-    var userId: String? = null
-
-
-    suspend fun init(context: Context) {
-        client = Client(context)
-            .setEndpoint("https://cloud.appwrite.io/v1")
-            .setProject("653e848b21aa10fbf791")
-
-        account = Account(client)
-        databases = Databases(client)
-        realtime = Realtime(client)
-        storage = Storage(client)
-
-        userId = getCurrentUserId()
-    }
+    private var _firebaseFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private var _firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private var _firebaseStorage: FirebaseStorage = FirebaseStorage.getInstance()
 
 
     suspend fun signUp(email: String, password: String) = withContext(Dispatchers.IO) {
-        account.create(
-            userId = ID.unique(),
-            email,
-            password,
-        )
+        _firebaseAuth.createUserWithEmailAndPassword(email, password)
     }
 
-    suspend fun signIn(email: String, password: String): Session =
+    suspend fun signIn(email: String, password: String): FirebaseUser? =
         withContext(Dispatchers.IO) {
-            return@withContext account.createEmailSession(
-                email,
-                password,
-            )
+            val signInTask = _firebaseAuth.signInWithEmailAndPassword(email, password)
+
+            suspendCoroutine { continuation ->
+                signInTask.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        continuation.resume(task.result.user)
+                    } else {
+                        continuation.resumeWithException(
+                            task.exception ?: Exception("Error Sign In")
+                        )
+                    }
+                }
+            }
         }
 
 
     suspend fun addUserDocument(user: UserModel) = withContext(Dispatchers.IO) {
-        databases.createDocument("1", "users", user.id, user.toMap())
+        _firebaseFirestore.collection("users").document(user.id).set(user.toMap())
     }
-
 
     suspend fun updateUserDocument(user: UserModel) = withContext(Dispatchers.IO) {
-        databases.updateDocument("1", "users", user.id, user.toMap())
+        _firebaseFirestore.collection("users").document(user.id).update(user.toMap())
     }
 
-    suspend fun getUserDocumentById(uid: String): UserModel? = withContext(Dispatchers.IO) {
-        try {
-            val user = databases.getDocument("1", "users", uid)
-            return@withContext user.data.toUserModel()
-        } catch (e: Exception) {
-            return@withContext null
-        }
-
-    }
+    suspend fun getUserDocumentById(uid: String): UserModel = withContext(Dispatchers.IO) {
 
 
-    private var userFlow: MutableStateFlow<UserModel?> = MutableStateFlow(null)
-    suspend fun getUserSnapshots(): Flow<UserModel?> {
-        realtime.subscribe("databases.1.collections.users.documents.$userId") { event ->
-            if (event.events.contains("databases.1.collections.users.documents.$userId.update")) {
-                val userModel = (event.payload as Map<String, Any>).toUserModel()
-                userFlow.value = userModel
-            }
-        }
-
-        return userFlow.asStateFlow()
-    }
-
-
-    suspend fun getUserSnapshotsById(uid: String): UserModel =
-        withContext(Dispatchers.IO) {
-            suspendCoroutine { continuation ->
-                realtime.subscribe("databases.1.collections.users.documents.${uid}", callback = {
-                    if (it.events.contains("databases.1.collections.users.documents.${uid}.update")) {
-                        continuation.resume((it.payload as Map<String, Any>).toUserModel())
+        suspendCoroutine { continuation ->
+            _firebaseFirestore.collection("users").document(uid).get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val snapshot = task.result
+                        val user = snapshot?.data?.toUserModel()
+                        if (user == null) {
+                            continuation.resumeWithException(
+                                task.exception ?: Exception("User not found")
+                            )
+                        } else {
+                            continuation.resume(user)
+                        }
+                    } else {
+                        continuation.resumeWithException(
+                            task.exception ?: Exception("Error getting user")
+                        )
                     }
                 }
-                )
+        }
+    }
+
+    suspend fun getUserSnapshots(): Flow<DocumentSnapshot> = withContext(Dispatchers.IO) {
+        _firebaseFirestore.collection("users").document(getCurrentUserId()!!).snapshots()
+    }
+
+    suspend fun getUserSnapshotsById(uid: String): Flow<DocumentSnapshot> =
+        withContext(Dispatchers.IO) {
+            _firebaseFirestore.collection("users").document(uid).snapshots()
+        }
+
+    suspend fun saveUserAvatar(storagePath: String, image: Uri): String =
+        withContext(Dispatchers.IO) {
+            val storageReference = _firebaseStorage.reference
+
+            val imageRef = storageReference.child(storagePath)
+            val uploadTask = imageRef.putFile(image)
+
+            suspendCoroutine { continuation ->
+                uploadTask.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val snapshot = task.result
+                        snapshot?.storage?.downloadUrl?.addOnCompleteListener { downloadUrlTask ->
+                            if (downloadUrlTask.isSuccessful) {
+                                val downloadUrl = downloadUrlTask.result.toString()
+                                continuation.resume(downloadUrl)
+                            } else {
+                                continuation.resumeWithException(
+                                    downloadUrlTask.exception
+                                        ?: Exception("Error getting download URL")
+                                )
+                            }
+                        }
+                    } else {
+                        continuation.resumeWithException(
+                            task.exception ?: Exception("Error uploading file")
+                        )
+                    }
+                }
             }
         }
 
-    suspend fun saveUserAvatar(image: String): String =
-        withContext(Dispatchers.IO) {
+    suspend fun checkUserAuth(email: String): Boolean = withContext(Dispatchers.IO) {
+        val fetchTask = _firebaseAuth.fetchSignInMethodsForEmail(email)
 
-            val file = storage.createFile(
-                "avatars",
-                userId!!,
-                InputFile.fromPath(image.toString())
-            )
-
-            return@withContext "https://cloud.appwrite.io/v1/storage/buckets/avatars/files/${file.id}/view?project=653e848b21aa10fbf791&mode=admin"
+        suspendCoroutine { continuation ->
+            fetchTask.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    continuation.resume(task.result?.signInMethods?.size != 0)
+                } else {
+                    continuation.resumeWithException(
+                        task.exception ?: Exception("Error checking auth")
+                    )
+                }
+            }
         }
-
+    }
 
     suspend fun checkUserDocumentExists(uid: String): Boolean = withContext(Dispatchers.IO) {
-        try {
-            databases.getDocument("1", "users", uid)
-            return@withContext true
-        } catch (e: Exception) {
-            return@withContext false
-        }
+        val fetchTask = _firebaseFirestore.collection("users").document(uid).get()
 
+        suspendCoroutine { continuation ->
+            fetchTask.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    continuation.resume(task.result?.data != null)
+                } else {
+                    continuation.resumeWithException(
+                        task.exception ?: Exception("Error checking user documents")
+                    )
+                }
+            }
+        }
     }
 
 
     suspend fun follow(targetUid: String) = withContext(Dispatchers.IO) {
-        val targetUser = getUserDocumentById(targetUid)!!
-        val user = getUserDocumentById(userId!!)!!
-
-        targetUser.followers.toMutableList().add(userId!!)
-        user.following.toMutableList().add(targetUid)
-
-
-        databases.updateDocument("1", "users", targetUid, targetUser.toMap())
-        databases.updateDocument("1", "users", userId!!, user.toMap())
+        _firebaseFirestore.collection("users").document(targetUid)
+            .update("followers", FieldValue.arrayUnion(getCurrentUserId()!!))
+        _firebaseFirestore.collection("users").document(getCurrentUserId()!!)
+            .update("following", FieldValue.arrayUnion(targetUid))
     }
 
     suspend fun unfollow(targetUid: String) = withContext(Dispatchers.IO) {
-        val targetUser = getUserDocumentById(targetUid)!!
-        val user = getUserDocumentById(userId!!)!!
-
-        targetUser.followers.toMutableList().remove(userId!!)
-        user.following.toMutableList().remove(targetUid)
-
-
-        databases.updateDocument("1", "users", targetUid, targetUser.toMap())
-        databases.updateDocument("1", "users", userId!!, user.toMap())
+        _firebaseFirestore.collection("users").document(targetUid)
+            .update("followers", FieldValue.arrayRemove(getCurrentUserId()!!))
+        _firebaseFirestore.collection("users").document(getCurrentUserId()!!)
+            .update("following", FieldValue.arrayRemove(targetUid))
     }
 
     suspend fun getFollowers(uid: String) = withContext(Dispatchers.IO) {
-        val user = getUserDocumentById(uid)!!
-
-        val list = mutableListOf<UserModel>()
-
-        for (userId in user.followers) {
-            val follower = getUserDocumentById(userId)!!
-            list.add(follower)
+        suspendCoroutine { continuation ->
+            _firebaseFirestore.collection("users").document(uid).get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val list = mutableListOf<UserModel>()
+                        val user = task.result.data?.toUserModel()
+                        if (user != null) {
+                            for (userId in user.followers) {
+                                val getTask =
+                                    _firebaseFirestore.collection("users").document(uid).get()
+                                Tasks.await(getTask)
+                                val follower = getTask.result.data?.toUserModel()
+                                if (follower != null) {
+                                    list.add(follower)
+                                }
+                            }
+                            continuation.resume(list)
+                        } else {
+                            continuation.resumeWithException(
+                                Exception("User data not found")
+                            )
+                        }
+                    } else {
+                        continuation.resumeWithException(
+                            task.exception ?: Exception("Error checking user documents")
+                        )
+                    }
+                }
         }
-        return@withContext list
-
     }
 
     suspend fun getFollowings(uid: String) = withContext(Dispatchers.IO) {
-
-        val users = databases.listDocuments("1", "users", listOf(Query.search("followers", uid)))
-
-        val list = mutableListOf<UserModel>()
-
-        for (doc in users.documents) {
-            list.add(doc.data.toUserModel())
-        }
-
-        return@withContext list
-
-    }
-
-    private suspend fun getCurrentUserId(): String? {
-        try {
-            val user = account.get()
-            return user.id
-        } catch (e: Exception) {
-            return null
+        suspendCoroutine { continuation ->
+            _firebaseFirestore.collection("users").whereArrayContains("followers", uid).get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val list = mutableListOf<UserModel>()
+                        for (doc in task.result.documents) {
+                            if (doc.data != null) {
+                                list.add(doc.data!!.toUserModel())
+                            }
+                        }
+                        continuation.resume(list)
+                    } else {
+                        continuation.resumeWithException(
+                            task.exception ?: Exception("Error checking user documents")
+                        )
+                    }
+                }
         }
     }
+
+    fun getCurrentUserId(): String? = _firebaseAuth.currentUser?.uid
+
 }
