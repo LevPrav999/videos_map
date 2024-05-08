@@ -33,6 +33,7 @@ class AnotherProfilePageViewModel @Inject constructor(
                         state.copy(isLoading = true)
                     }
 
+
                     is Resource.Error -> {
                         state.copy(isLoading = false, error = result.message)
                     }

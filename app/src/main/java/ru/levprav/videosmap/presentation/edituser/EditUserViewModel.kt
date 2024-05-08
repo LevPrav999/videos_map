@@ -79,7 +79,7 @@ class EditUserViewModel @Inject constructor(
             repository.saveProfile(
                 name = state.data.username,
                 description = state.data.description,
-                localUri = state.data.imageUrl,
+                localUri = state.data.imagePathUri,
                 networkUrl = state.data.imageUrlNetwork,
                 null,
                 null,

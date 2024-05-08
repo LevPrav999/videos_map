@@ -35,8 +35,7 @@ class AuthViewModel @Inject constructor(
 
                         is Resource.Success -> {
                             state = state.copy(isLoading = false, error = null)
-                            repository.init(context)
-                            navigationManager.navigate(NavigationDirections.authentication)
+                            navigationManager.navigate(NavigationDirections.editUser)
                         }
 
                         else -> {
@@ -58,7 +57,6 @@ class AuthViewModel @Inject constructor(
                         }
 
                         is Resource.Success -> {
-                            repository.init(context)
                             state = state.copy(isLoading = false, error = null, data = null)
                             repository.getMyProfile().collect { resultS ->
                                 if (resultS.data != null) {

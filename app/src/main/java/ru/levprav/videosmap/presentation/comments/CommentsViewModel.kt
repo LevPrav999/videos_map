@@ -37,6 +37,7 @@ class CommentsViewModel @Inject constructor(
 
                     is Resource.Success -> {
                         state = state.copy(
+                            isLoading = false,
                             comments = result.data,
                         )
                         getAvatarsFromComments()
