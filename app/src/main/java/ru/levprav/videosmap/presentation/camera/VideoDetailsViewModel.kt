@@ -9,11 +9,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ru.levprav.videosmap.data.repository.VideoRepositoryImpl
 import ru.levprav.videosmap.domain.util.Resource
+import ru.levprav.videosmap.navigation.NavigationDirections
+import ru.levprav.videosmap.navigation.NavigationManager
 import javax.inject.Inject
 
 @HiltViewModel
 class VideoDetailsViewModel @Inject constructor(
-    private val repository: VideoRepositoryImpl
+    private val repository: VideoRepositoryImpl,
+    private val navigationManager: NavigationManager
 ) : ViewModel() {
 
     var state by mutableStateOf(VideoDetailsState())
@@ -32,6 +35,7 @@ class VideoDetailsViewModel @Inject constructor(
                     }
 
                     else -> {
+                        navigationManager.navigate(NavigationDirections.mainScreen)
                         state.copy(isLoading = false, error = null)
                     }
                 }

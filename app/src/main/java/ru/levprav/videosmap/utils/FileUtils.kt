@@ -40,7 +40,6 @@ object FileUtils {
                 val docId = DocumentsContract.getDocumentId(uri)
                 val split = docId.split(":".toRegex()).dropLastWhile { it.isEmpty() }
                     .toTypedArray()
-                val type = split[0]
                 val fullPath = getPathFromExtSD(split)
                 return if (fullPath !== "") {
                     fullPath
@@ -98,7 +97,6 @@ object FileUtils {
                     }
                 } else {
                     val id = DocumentsContract.getDocumentId(uri)
-                    val isOreo = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                     if (id.startsWith("raw:")) {
                         return id.replaceFirst("raw:".toRegex(), "")
                     }
@@ -214,7 +212,6 @@ object FileUtils {
         val sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE)
         returnCursor.moveToFirst()
         val name = returnCursor.getString(nameIndex)
-        val size = java.lang.Long.toString(returnCursor.getLong(sizeIndex))
         val file = File(context.cacheDir, name)
         try {
             val inputStream = context.contentResolver.openInputStream(uri)
@@ -251,7 +248,6 @@ object FileUtils {
         val sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE)
         returnCursor.moveToFirst()
         val name = returnCursor.getString(nameIndex)
-        val size = java.lang.Long.toString(returnCursor.getLong(sizeIndex))
         val file = File(context.filesDir, name)
         try {
             val inputStream = context.contentResolver.openInputStream(uri)

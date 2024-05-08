@@ -25,7 +25,7 @@ fun VideoModel.toMap(): Map<String, Any?> {
         "thumbnailUrl" to thumbnailUrl,
         "createdAt" to createdAt,
         "description" to description,
-        "descriptionArray" to description,
+        "descriptionArray" to descriptionArray,
         "userId" to userId,
         "position" to mapOf(
             "latitude" to position.latitude,

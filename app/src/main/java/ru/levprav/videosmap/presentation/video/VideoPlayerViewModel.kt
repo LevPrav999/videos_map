@@ -43,8 +43,8 @@ class VideoPlayerViewModel @Inject constructor(
                             data = result.data,
                             isLiked = result.data!!.liked.contains(userRepository.getCurrentUserId())
                         )
-                        loadAvatar()
                         checkFollowing()
+                        loadAvatar()
                     }
                 }
             }
@@ -88,7 +88,8 @@ class VideoPlayerViewModel @Inject constructor(
 
                     is Resource.Success -> {
                         state.copy(
-                            isSubscribed = result.data!!.contains(currentUser.last().data)
+                            isSubscribed = result.data!!.toString()
+                                .contains(currentUser.last().data!!.id)
                         )
                     }
                 }
