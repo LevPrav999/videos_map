@@ -83,6 +83,12 @@ class UserApi @Inject constructor() {
         }
     }
 
+    suspend fun updateUserLikesCount(userId: String, isLike: Boolean) =
+        withContext(Dispatchers.IO) {
+            _firebaseFirestore.collection("users").document(userId)
+                .update("likeCount", FieldValue.increment(if (isLike) 1 else -1))
+        }
+
     suspend fun getUserSnapshots(): Flow<DocumentSnapshot> = withContext(Dispatchers.IO) {
         _firebaseFirestore.collection("users").document(getCurrentUserId()!!).snapshots()
     }

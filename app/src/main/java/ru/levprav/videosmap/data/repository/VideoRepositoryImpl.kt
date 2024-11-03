@@ -127,7 +127,8 @@ class VideoRepositoryImpl @Inject constructor(
         try {
             videoApi.like(videoId, userApi.getCurrentUserId()!!)
             val video = videoApi.getVideoById(videoId)
-            emit(Resource.Success(video!!))
+            userApi.updateUserLikesCount(video!!.userId, true)
+            emit(Resource.Success(video))
         } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Like error"))
         }
@@ -138,7 +139,8 @@ class VideoRepositoryImpl @Inject constructor(
         try {
             videoApi.unlike(videoId, userApi.getCurrentUserId()!!)
             val video = videoApi.getVideoById(videoId)
-            emit(Resource.Success(video!!))
+            userApi.updateUserLikesCount(video!!.userId, false)
+            emit(Resource.Success(video))
         } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Unlike error"))
         }

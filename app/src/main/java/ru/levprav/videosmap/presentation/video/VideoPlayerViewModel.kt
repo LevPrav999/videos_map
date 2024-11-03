@@ -165,6 +165,8 @@ class VideoPlayerViewModel @Inject constructor(
     }
 
     fun navigateToUser(userId: String) {
-        navigationManager.navigate(AnotherProfileDestination.anotherProfileScreen(userId))
+        if (userRepository.getCurrentUserId() != userId) {
+            navigationManager.navigate(AnotherProfileDestination.anotherProfileScreen(userId))
+        }
     }
 }
