@@ -40,15 +40,15 @@ class CommentRepositoryImpl @Inject constructor(
             emit(Resource.Loading())
             try {
                 commentApi.getCommentsSnapshots(videoId).collect { snapshot ->
+                    val comments = mutableListOf<CommentModel>()
                     if (snapshot.documents.size != 0 && !snapshot.isEmpty) {
-                        val comments = mutableListOf<CommentModel>()
                         for (video in snapshot.documents) {
                             if (video.data != null) {
                                 comments.add(video.data!!.toCommentModel())
                             }
                         }
-                        emit(Resource.Success(comments))
                     }
+                    emit(Resource.Success(comments))
                 }
             } catch (e: Exception) {
                 emit(Resource.Error(e.message ?: "Unknown error"))
