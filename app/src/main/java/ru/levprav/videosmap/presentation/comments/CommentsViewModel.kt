@@ -48,29 +48,30 @@ class CommentsViewModel @Inject constructor(
     }
 
     private suspend fun getAvatarsFromComments() {
-        viewModelScope.launch {
-            for (comment in state.comments!!) {
-                userRepository.getProfileDetail(comment.userId).collect { result ->
-                    when (result) {
+        val commentsArray = state.comments!!
+        for (comment in commentsArray) {
+            userRepository.getProfileDetail(comment.userId).collect { result ->
+                when (result) {
 
-                        is Resource.Error -> {
-                            state = state.copy(isLoading = false, error = result.message)
-                        }
+                    is Resource.Error -> {
+                        state = state.copy(isLoading = false, error = result.message)
+                    }
 
-                        is Resource.Success -> {
-                            val array = state.users
-                            array.add(result.data!!)
-                            state = state.copy(
-                                users = array,
-                            )
-                        }
+                    is Resource.Success -> {
+                        val array = state.users
+                        array.add(result.data!!)
+                        state = state.copy(
+                            users = array,
+                        )
+                    }
 
-                        else -> {}
+                    is Resource.Loading -> {
+                        state = state.copy(isLoading = true)
                     }
                 }
             }
-            state = state.copy(isLoading = false)
         }
+        state = state.copy(isLoading = false)
     }
 
     fun postComment(videoId: String) {
