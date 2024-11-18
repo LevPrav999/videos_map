@@ -25,6 +25,11 @@ class VideoPlayerViewModel @Inject constructor(
     var state by mutableStateOf(VideoPlayerState())
         private set
 
+    fun deleteData() {
+        state.data = null
+
+    }
+
     fun loadVideoModel(videoId: String) {
 
         viewModelScope.launch {

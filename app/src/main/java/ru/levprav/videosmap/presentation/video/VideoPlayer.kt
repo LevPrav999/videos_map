@@ -208,6 +208,7 @@ fun VideoPlayer(
                     .align(Alignment.TopStart)
                     .padding(5.dp)
                     .clickable {
+                        viewModel.deleteData()
                         viewModel.navigateBack()
                     },
             )

@@ -8,7 +8,7 @@ data class VideoPlayerState(
     val isSubscribed: Boolean = false,
     val user: UserModel? = null,
 
-    val data: VideoModel? = null,
+    var data: VideoModel? = null,
     val isLoading: Boolean = false,
     val error: String? = null,
 )
